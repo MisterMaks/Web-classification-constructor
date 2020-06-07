@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <div>
+            <form method="POST">
+                {{ form_1.as_p }}
+                <button type="submit" name="button send">Отправить</button>
+                <button type="submit" name="button exit">Выйти</button>
+            </form>
+        </div>
+        <div>
+            <div>{{ data }}</div>
+        </div>
+    </div>
+{% endblock %}

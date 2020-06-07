@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        {% if invalid %}
+            <div>Incorrect login or password</div>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}" />
+            <div>
+                <label for="{{ form.username.auto_id }}" >Username</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label for="{{ form.password.auto_id }}">Password</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" name="login">Login</button>
+        </form>
+    </div>
+{% endblock %}
