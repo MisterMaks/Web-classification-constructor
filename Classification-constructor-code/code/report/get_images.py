@@ -3,6 +3,7 @@ import pickle
 from sklearn.metrics import *
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
 all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
               'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
@@ -121,7 +122,8 @@ def create_hist(ones, zeros, name):
     plt.xlabel('Score', size=15)
     plt.ylabel('Число набрюдений', size=15)
     plt.legend()
-    plt.savefig('/home/alexey/NIR/App/images/{}/Distribution_graph {}.png'.format(all_params['name of model with time of create'], name),
+    plt.savefig(os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/Distribution_graph {}.png'.format(
+        all_params['name of model with time of create'], name)),
                 dpi=200)
 
 
@@ -135,26 +137,32 @@ def get_all_images(estimators_prob, y_true):
     for key, value in estimators_prob.items():
         fpr, tpr, thr = roc_curve(y_true, value)
         create_plot([(fpr, tpr, key)], 'False Positive Rate', 'True Positive Rate', 'ROC curve',
-                    '/home/alexey/NIR/App/images/{}/ROC_curve {}.png'.format(all_params['name of model with time of create'], key),
+                    os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/ROC_curve {}.png'.format(
+                        all_params['name of model with time of create'], key)),
                     diag=True)
     arr = []
     for key, value in estimators_prob.items():
         fpr, tpr, thr = roc_curve(y_true, value)
         arr.append((fpr, tpr, key))
     create_plot(arr, 'False Positive Rate', 'True Positive Rate', 'ROC curve',
-                '/home/alexey/NIR/App/images/{}/ROC_curve.png'.format(all_params['name of model with time of create']), diag=True)
+                os.path.join(os.path.dirname(__file__), '..', '..',
+                             'App/images/{}/ROC_curve.png'.format(all_params['name of model with time of create'])),
+                diag=True)
 
     for key, value in estimators_prob.items():
         precision, recall, thr = precision_recall_curve(y_true, value)
         create_plot([(recall, precision, key)], 'Recall', 'Precision', 'PR curve',
-                    '/home/alexey/NIR/App/images/{}/PR_curve {}.png'.format(all_params['name of model with time of create'], key))
+                    os.path.join(os.path.dirname(__file__), '..', '..',
+                                 'App/images/{}/PR_curve {}.png'.format(all_params['name of model with time of create'],
+                                                                        key)))
 
     arr = []
     for key, value in estimators_prob.items():
         precision, recall, thr = precision_recall_curve(y_true, value)
         arr.append((recall, precision, key))
     create_plot(arr, 'Recall', 'Precision', 'PR curve',
-                '/home/alexey/NIR/App/images/{}/PR_curve.png'.format(all_params['name of model with time of create']))
+                os.path.join(os.path.dirname(__file__), '..', '..',
+                             'App/images/{}/PR_curve.png'.format(all_params['name of model with time of create'])))
 
     for key, value in estimators_prob.items():
         ones = [x[1] for x in zip(y_true, value) if x[0] == 1]
@@ -181,4 +189,6 @@ def get_all_images(estimators_prob, y_true):
                                                      title='Precision & Recall by percentile',
                                                      fontsize=14)
     fig = ax.get_figure()
-    fig.savefig('/home/alexey/NIR/App/images/{}/PR_by_prc.png'.format(all_params['name of model with time of create']), dpi=200)
+    fig.savefig(os.path.join(os.path.dirname(__file__), '..', '..',
+                             'App/images/{}/PR_by_prc.png'.format(all_params['name of model with time of create'])),
+                dpi=200)

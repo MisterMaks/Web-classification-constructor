@@ -9,13 +9,13 @@ from fitting.learning import Learning
 from fitting.predicting import predict_test
 from report.get_images import feature_description, getting_estimators, get_all_images
 from report.create_doc import get_doc
-
+import os
 import warnings
 
 warnings.filterwarnings('ignore')
 
-train_path = '/home/alexey/NIR/Input/train.csv'
-test_path = '/home/alexey/NIR/Input/test.csv'
+train_path = os.path.join(os.path.dirname(__file__), '..', 'Input', 'train.csv')
+test_path = os.path.join(os.path.dirname(__file__), '..', 'Input', 'test.csv')
 
 train = pd.read_csv(train_path)
 test = pd.read_csv(test_path)
@@ -66,24 +66,26 @@ train_scaled_all = normalize(train_outliers, numeric_cols, test)
 train_selected, selected_cols = feature_selection_fit(train_scaled_all, all_params, numeric_cols)
 
 # итого - train_selected - готовый к обучению датафрейм
-
 # сплитим на трейн и тест
 X_train, X_test, y_train, y_test = train_test_split(train_selected.drop(columns=['id', 'target']),
                                                     train_selected['target'], test_size=all_params['test_ratio'])
 
-# обучаемся
+# обучаемся и можем посмотреть результат
 qwe = Learning()
 qwe.fit(X_train, y_train)
+# print(qwe.score(X_test, y_test))
 
 # сохраняем обученную модель
-pickle_path = '/home/alexey/NIR/App/models/{}/composition.pickle'.format(all_params['name of model with time of create'])
+pickle_path = os.path.join(os.path.dirname(__file__), '..', 'App/models/{}/composition.pickle'.format(all_params[
+                                                                                                          'name of model with time of create']))
 with open(pickle_path, 'wb') as f:
     pickle.dump(qwe, f)
 
 # предсказание и сохранение результатов в файл
 pred_test = predict_test(test, all_params, selected_cols, pickle_path)
 pred_test_with_features = test.merge(pred_test, on='id')
-pred_test_with_features.to_csv('/home/alexey/NIR/Output/{}/fin_test.csv'.format(all_params['name of model with time of create']))
+pred_test_with_features.to_csv(os.path.join(os.path.dirname(__file__), '..', 'Output/{}/fin_test.csv'.format(
+    all_params['name of model with time of create'])))
 
 # получение промежуточного результата для графиков и отчета
 feats_descr = feature_description(X_train, train)

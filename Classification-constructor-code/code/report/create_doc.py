@@ -4,6 +4,7 @@ from docx import Document
 from docx.shared import Inches
 from sklearn.metrics import confusion_matrix, classification_report
 import re
+import os
 
 all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
               'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
@@ -182,23 +183,27 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
 
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
             add_graph(doc=doc,
-                      img_path='/home/alexey/NIR/App/images/{}/ROC_curve {}.png'.format(
-                          all_params['name of model with time of create'],
-                          key),
+                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                                            'App/images/{}/ROC_curve {}.png'.format(
+                                                all_params['name of model with time of create'],
+                                                key)),
                       imp_text=f'Рис.{img} Roc-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('PR-кривая', style='List Bullet 2')
             add_graph(doc=doc,
-                      img_path='/home/alexey/NIR/App/images/{}/PR_curve {}.png'.format(
-                          all_params['name of model with time of create'],
-                          key),
+                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                                            'App/images/{}/PR_curve {}.png'.format(
+                                                all_params['name of model with time of create'],
+                                                key)),
                       imp_text=f'Рис.{img} PR-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('Distribution graph', style='List Bullet 2')
-            add_graph(doc=doc, img_path='/home/alexey/NIR/App/images/{}/Distribution_graph {}.png'.format(
-                all_params['name of model with time of create'], key),
+            add_graph(doc=doc,
+                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                                            'App/images/{}/Distribution_graph {}.png'.format(
+                                                all_params['name of model with time of create'], key)),
                       imp_text=f'Рис.{img} Гистограмма распределения предсказаний модели {key}', width=width,
                       height=height)
             img += 1
@@ -218,23 +223,28 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     create_heading(doc, text='Визуализация результатов', level=2, alignment=0)
 
     add_graph(doc=doc,
-              img_path='/home/alexey/NIR/App/images/{}/ROC_curve.png'.format(all_params['name of model with time of create']),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/ROC_curve.png'.format(
+                  all_params['name of model with time of create'])),
               imp_text=f'Рис.{img} Roc-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path='/home/alexey/NIR/App/images/{}/PR_curve.png'.format(all_params['name of model with time of create']),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/PR_curve.png'.format(
+                  all_params['name of model with time of create'])),
               imp_text=f'Рис.{img} PR-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path='/home/alexey/NIR/App/images/{}/PR_by_prc.png'.format(all_params['name of model with time of create']),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/PR_by_prc.png'.format(
+                  all_params['name of model with time of create'])),
               imp_text=f'Рис.{img} График precision и recall по перцентилям', width=width, height=height)
     img += 1
-    add_graph(doc=doc, img_path='/home/alexey/NIR/App/images/{}/Distribution_graph final_model.png'.format(
-        all_params['name of model with time of create']),
+    add_graph(doc=doc, img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                                             'App/images/{}/Distribution_graph final_model.png'.format(
+                                                 all_params['name of model with time of create'])),
               imp_text=f'Рис.{img} Гистограмма распределения предсказаний итоговой модели', width=width, height=height)
 
     test_ex = np.vstack((pred_test.columns, pred_test.head(10).values))
     table_to_doc(doc=doc, header='Предсказание на тестовой выборке', nrows=11, ncols=3, matrix=test_ex)
 
-    path_to_final_word = '/home/alexey/NIR/Output/{}/fin.docx'.format(all_params['name of model with time of create'])
+    path_to_final_word = os.path.join(os.path.dirname(__file__), '..', '..',
+                                      'Output/{}/fin.docx'.format(all_params['name of model with time of create']))
     doc.save(path_to_final_word)
