@@ -12,19 +12,22 @@ from .forms import Form1
 @require_http_methods(["GET", "POST"])
 def post_form_1(request):
     form_1 = Form1(request.POST)
-    field_1 = ""
-    field_2 = ""
-    field_3 = ""
+    data = {}
+    # field_1 = ""
+    # field_2 = ""
+    # field_3 = ""
     if form_1.is_valid():
-        field_1 = form_1.cleaned_data["field_1"]
-        field_2 = form_1.cleaned_data["field_2"]
-        field_3 = form_1.cleaned_data["field_3"]
+        # field_1 = form_1.cleaned_data["field_1"]
+        # field_2 = form_1.cleaned_data["field_2"]
+        # field_3 = form_1.cleaned_data["field_3"]
+        for field in form_1.cleaned_data.keys():
+            data[field.replace('_', ' ') if field != 'test_ratio' else field] = form_1.cleaned_data[field]
         response = {"form_1": form_1,
-                    "data": {"field_1": field_1, "field_2": field_2, "field_3": field_3}}
+                    "data": data}
         print(response["data"])
         return response
     response = {"form_1": form_1,
-                "data": {"field_1": field_1, "field_2": field_2, "field_3": field_3}}
+                "data": data}
     print(response)
     return response
 
