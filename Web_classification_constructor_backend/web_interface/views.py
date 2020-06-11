@@ -13,8 +13,11 @@ from .forms import FeatureSelectionMethodVarianceThreshold, FeatureSelectionMeth
     FeatureSelectionMethodSelectFromModel
 from .forms import CompositionMethodVoting, CompositionMethodAdaboost, CompositionMethodStacking
 from .forms import NeuralNetwork, DecisionTree, LogisticRegression
+from .forms import UploadFileForm
+from Web_classification_constructor_backend.settings import MEDIA_ROOT
 import datetime
 from urllib.parse import urlencode
+import json
 
 # Create your views here.
 
@@ -224,7 +227,37 @@ def button_click_tracking_2(request):
         return redirect("/logout")
     if "button send 2" in request.POST.keys():
         response = post_form_2(request, common_params)
-        return render(request, "form_2.html", response)
+        with open(f"{MEDIA_ROOT}/user_all_params.json", 'w') as all_params_file:
+            json.dump(response["data"], all_params_file)
+        return redirect(f'/3')
+        # return render(request, "form_2.html", response)
     else:
         response = post_form_2(request, common_params)
         return render(request, "form_2.html", response)
+
+
+def handle_uploaded_file(file, filename):
+    with open(f"{MEDIA_ROOT}/{filename}", 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def button_click_tracking_3(request):
+    if "button exit" in request.POST.keys():
+        return redirect("/logout")
+    if "button send 3" in request.POST.keys():
+        upload_file_form = UploadFileForm(request.POST, request.FILES)
+        if upload_file_form.is_valid():
+            filename = upload_file_form.cleaned_data['title']
+            handle_uploaded_file(request.FILES['file'], filename)
+            response = {
+                "upload_file_form": upload_file_form,
+                "data": "Файл загружен"
+            }
+            return render(request, "form_3.html", response)
+    else:
+        upload_file_form = UploadFileForm()
+    return render(request, 'form_3.html', {'upload_file_form': upload_file_form})

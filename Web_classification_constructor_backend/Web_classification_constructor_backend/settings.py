@@ -130,6 +130,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'user_files')
+
 try:
     from .local_settings import *
 except ImportError:

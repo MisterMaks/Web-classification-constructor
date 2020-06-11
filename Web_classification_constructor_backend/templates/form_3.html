@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <div>
+            <form method="POST" enctype="multipart/form-data">
+                {{ upload_file_form.as_p }}
+                <button type="submit" name="button send 3">Upload</button>
+                <button type="submit" name="button exit">Выйти</button>
+            </form>
+        </div>
+        <div>
+            <div>{{ data }}</div>
+        </div>
+    </div>
+{% endblock %}

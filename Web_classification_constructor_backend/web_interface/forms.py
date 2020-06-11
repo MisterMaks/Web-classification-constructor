@@ -192,3 +192,8 @@ class LogisticRegression(forms.Form):
 
     choices = get_choices(['l1', 'l2', 'elasticnet'])
     penalty = forms.ChoiceField(choices=choices, required=False, initial="")
+
+
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    file = forms.FileField()
