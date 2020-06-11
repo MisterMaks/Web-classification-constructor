@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <div>
+            <form method="POST">
+                <div>
+                    {% if filling_gaps_method %}
+                        <div>filling_gaps_method</div>
+                        <div>{{filling_gaps_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if deleting_anomalies_method %}
+                        <div>deleting_anomalies_method</div>
+                        <div>{{deleting_anomalies_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div>feature_selection_method</div>
+                    <div>{{feature_selection_method.as_p}}</div>
+                </div>
+                <div>
+                    {% if composition_method %}
+                        <div>composition_method</div>
+                        <div>{{composition_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% for algorithm, algorithm_form in base_algorithms.items %}
+                        <div>
+                            <div>{{algorithm}}</div>
+                            <div>{{algorithm_form.as_p}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" name="button send 2">Отправить</button>
+                <button type="submit" name="button exit">Выйти</button>
+            </form>
+        </div>
+        <div>
+            <div>{{ data }}</div>
+        </div>
+    </div>
+{% endblock %}

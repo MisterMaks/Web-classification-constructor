@@ -21,13 +21,13 @@ def login(request):
             if check_user_data:
                 # user = UserProfile.objects.get(username=username)
                 # login(request, user)
-                return redirect('/')
+                return redirect('/1')
             else:
                 form = UserProfileForm
                 return render(request, 'login.html', {'form': form, 'invalid': True})
     else:
         if request.user.is_authenticated:
-            return redirect('/')
+            return redirect('/1')
         else:
             form = UserProfileForm
             return render(request, 'login.html', {'form': form})
