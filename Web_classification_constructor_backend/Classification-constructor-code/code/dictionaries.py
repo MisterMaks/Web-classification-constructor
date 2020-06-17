@@ -20,15 +20,17 @@
 раньше, чтоб много не перелопачивать)
 
 Возможно, для этого сгодятся отдельные куски из предыдущего варианта, но вставлять еод парсинга я не буду
+
+UPD:
+добавил ЧАСТНЫЕ ПАРАМЕТРЫ для дерева решений (min_sample_leaf, min_sample_split) и нейросети (learning_rate_init),
+убрал общий параметр модели по умолчанию
+УКазал комментарии по некотрым параметрам, все есть в памятке
 """
 
 common_params = {
     'name of model': {'type': str,  # название модели - нужно, чтоб потом легко находить пиклы и картинки
                       'values': None
                       },
-    'default': {'type': str,
-                'values': ['0', '1']},
-    # 1 - использовать модель по умолчанию, 0 - не использовать, пока просто для виду, реальной модели по умолчанию нет
     'filling gaps method': {'type': str,
                             'values': ['HardRemoval', 'InsertMeanMode', 'LinearImputer'],
                             },
@@ -44,16 +46,16 @@ common_params = {
     'composition method': {'type': str,
                            'values': ['voting', 'adaboost', 'stacking']
                            },
-    'neural network number': {'type': int,
+    'neural network number': {'type': int,  # 0, 1, 2 ...
                               'values': None
                               },
-    'decision tree number': {'type': int,
+    'decision tree number': {'type': int,  # 0, 1, 2 ...
                              'values': None
                              },
-    'logistic regression number': {'type': int,
+    'logistic regression number': {'type': int,  # 0, 1, 2 ...
                                    'values': None
                                    },
-    'test_ratio': {'type': float,  # добавил параметр
+    'test_ratio': {'type': float,  # доля, от 0 до 1 не включая концы
                    'values': None
                    },
 }
@@ -61,23 +63,23 @@ common_params = {
 methods_params = {
 
     'filling gaps method': {
-        'InsertMeanMode': {'threshold': {'type': int, 'values': None}},
+        'InsertMeanMode': {'threshold': {'type': int, 'values': None}},  # 1, 2, 3 ...
         'HardRemoval': {},
         'LinearImputer': {}
     },
 
     'deleting anomalies method': {
         'ThreeSigma': {},
-        'Grubbs': {'alpha': {'type': float, 'values': None}},
-        'Interquartile': {'low_quant': {'type': float, 'values': None},
-                          'up_quant': {'type': float, 'values': None},
-                          'coef': {'type': float, 'values': None}},
-        'IsolationForest': {'n_estimators': {'type': int, 'values': None},
-                            'contamination': {'type': float, 'values': None}},
-        'Elliptic': {'contamination': {'type': float, 'values': None}},
-        'SVM': {'iters': {'type': int, 'values': None}},
+        'Grubbs': {'alpha': {'type': float, 'values': None}},  # (0,1)
+        'Interquartile': {'low_quant': {'type': float, 'values': None}, # (0,1)
+                          'up_quant': {'type': float, 'values': None},# (0,1)
+                          'coef': {'type': float, 'values': None}},# (0,1)
+        'IsolationForest': {'n_estimators': {'type': int, 'values': None}, # 1,2,3... (лучше в районе 50)
+                            'contamination': {'type': float, 'values': None}}, # (0,1), доля выкидываемых
+        'Elliptic': {'contamination': {'type': float, 'values': None}}, # (0,1)
+        'SVM': {'iters': {'type': int, 'values': None}},# 1, 2, 3 ...
         'Approximate': {'deviation': {'type': int, 'values': None}},
-        'LocalFactor': {'neigh': {'type': int, 'values': None},
+        'LocalFactor': {'neigh': {'type': int, 'values': None}, # ???
                         'contamination': {'type': float, 'values': None},
                         'algorithm': {'type': str, 'values': ['auto', 'ball_tree', 'kd_tree', 'brute']}}
     },
@@ -113,10 +115,13 @@ methods_params = {
         'neural network': {
             'activation': {'type': str, 'values': ['identity', 'logistic', 'tanh', 'relu']},
             'solver': {'type': str, 'values': ['lbfgs', 'sgd', 'adam']},
-            'learning_rate': {'type': str, 'values': ['constant', 'invscaling', 'adaptive']}},
+            'learning_rate': {'type': str, 'values': ['constant', 'invscaling', 'adaptive']},
+            'learning_rate_init': {'type': float, 'values': None}},
         'decision tree': {
             'criterion': {'type': str, 'values': ['gini', 'entropy']},
-            'max_depth': {'type': int, 'values': None}},
+            'max_depth': {'type': int, 'values': None},
+            'min_samples_split': {'type': int, 'values': None},
+            'min_samples_leaf': {'type': int, 'values': None}},
         'logistic regression': {
             'solver': {'type': str, 'values': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']},
             # важно смотреть, сочетаются ли solver и penalty
