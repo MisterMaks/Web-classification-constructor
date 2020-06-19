@@ -22,26 +22,28 @@ test = pd.read_csv(test_path)
 
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
 numeric_cols = list(
-    train.drop('target', axis=1).select_dtypes(include=numerics).columns)  # мб это лишнее, но пока это нужно
+    train.drop('target', axis=1).select_dtypes(include=numerics).columns)  # должно быть на входе
 
 all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
               'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
               'feature selection method': {'RFE': {'n_features_to_select': 8, 'step': 1}},
               'base algorithms': {'neural network #1': {'activation': 'logistic',
                                                         'solver': 'lbfgs',
-                                                        'learning_rate': 'constant'},
+                                                        'learning_rate': 'constant',
+                                                        'learning_rate_init': 0.05},
                                   'neural network #2': {'activation': 'tanh',
                                                         'solver': 'sgd',
-                                                        'learning_rate': 'invscaling'},
+                                                        'learning_rate': 'invscaling',
+                                                        'learning_rate_init': 0.01},
                                   'logistic regression #1': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'logistic regression #2': {'solver': 'lbfgs', 'penalty': 'l2'}},
+                                  'logistic regression #2': {'solver': 'lbfgs', 'penalty': 'l2'},
+                                  'decision tree #1': {'criterion': 'entropy', 'max_depth': 6, 'min_samples_split': 5,
+                                                       'min_samples_leaf': 2}},
               'name of model': 'model1',
-              'default': '0',
               'filling gaps method': 'LinearImputer',
               'composition method': 'voting',
               'test_ratio': 0.25,
               'common params': {'name of model': 'model1',
-                                'default': '0',
                                 'filling gaps method': 'LinearImputer',
                                 'deleting anomalies method': 'Elliptic',
                                 'feature selection method': 'RFE',
@@ -73,7 +75,7 @@ X_train, X_test, y_train, y_test = train_test_split(train_selected.drop(columns=
 # обучаемся и можем посмотреть результат
 qwe = Learning()
 qwe.fit(X_train, y_train)
-# print(qwe.score(X_test, y_test))
+print(qwe.score(X_test, y_test))
 
 # сохраняем обученную модель
 pickle_path = os.path.join(os.path.dirname(__file__), '..', 'App/models/{}/composition.pickle'.format(all_params[
