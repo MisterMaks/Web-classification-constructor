@@ -42,3 +42,32 @@
         </div>
     </div>
 {% endblock %}
+{% block script %}
+    <script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        for (let i = 1; i <= {{logistic_regression_number}}; i++) {
+            let solver = $('#id_logistic_regression_' + i + '-solver');
+            let penalty = $('#id_logistic_regression_' + i + '-penalty');
+            let params = {
+                'saga': ['l1', 'l2', 'elasticnet', 'none'],
+                'sag': ['l2', 'none'],
+                'newton-cg': ['l2', 'none'],
+                'lbfgs': ['l2', 'none'],
+                'liblinear': ['l1']
+            }
+            function setParams() {
+                while (penalty[0].options.length > 0) {
+                    penalty[0].remove(0);
+                }
+                params[solver[0].value].forEach(
+                    function (item, i, arr) {
+                        let option = new Option(item, item);
+                        penalty[0].append(option);
+                    }
+                )
+            }
+            setParams();
+            solver.change(setParams);
+        }
+    </script>
+{% endblock %}

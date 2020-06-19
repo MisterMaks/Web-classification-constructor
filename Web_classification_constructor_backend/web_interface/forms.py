@@ -8,9 +8,27 @@ def get_choices(choices):
 
 
 def check_positive(value):
+    """Проверка что число > 0 или None"""
+    if not (value > 0 or value is None):
+        raise ValidationError(f"{value} must be >0 or None")
+
+
+def check_positive_with_zero(value):
     """Проверка что число >= 0 или None"""
     if not (value >= 0 or value is None):
         raise ValidationError(f"{value} must be >=0 or None")
+
+
+def check_zero_one(value):
+    """Проверка что число между 0 и 1 не включая или None"""
+    if not (1 > value > 0 or value is None):
+        raise ValidationError(f"{value} must be in (0, 1) or None")
+
+
+def check_0_100(value):
+    """Проверка что число между 0 и 100 не включая или None"""
+    if not (100 > value > 0 or value is None):
+        raise ValidationError(f"{value} must be in (0, 100) or None")
 
 
 class Form1(forms.Form):
@@ -21,9 +39,6 @@ class Form1(forms.Form):
     # field_3 = forms.ChoiceField(choices=choices, required=False, initial="", help_text=" - Выбор")
 
     name_of_model = forms.CharField(required=False, initial="", empty_value=None, label="Название модели")
-
-    choices = [(0, "Не использовать модель по-умолчанию"), (1, "Использовать модель по-умолчанию")]
-    default = forms.ChoiceField(choices=choices, required=False, initial="", label="Модель по-умолчанию")
 
     choices = get_choices(['HardRemoval', 'InsertMeanMode', 'LinearImputer'])
     filling_gaps_method = forms.ChoiceField(choices=choices, required=False, initial="",
@@ -43,15 +58,15 @@ class Form1(forms.Form):
     composition_method = forms.ChoiceField(choices=choices, required=False, initial="", label="Метод композиций")
 
     neural_network_number = forms.IntegerField(required=False, label="Количество нейронных сетей",
-                                               validators=[check_positive])
+                                               validators=[check_positive_with_zero])
 
     decision_tree_number = forms.IntegerField(required=False, label="Количество решающих деревьев",
-                                              validators=[check_positive])
+                                              validators=[check_positive_with_zero])
 
     logistic_regression_number = forms.IntegerField(required=False, label="Количество логистических регрессий",
-                                                    validators=[check_positive])
+                                                    validators=[check_positive_with_zero])
 
-    test_ratio = forms.FloatField(required=False, validators=[check_positive])
+    test_ratio = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class FillingGapsMethodInsertMeanMode(forms.Form):
@@ -71,22 +86,22 @@ class DeletingAnomaliesMethodThreeSigma(forms.Form):
 
 
 class DeletingAnomaliesMethodGrubbs(forms.Form):
-    alpha = forms.FloatField(required=False, validators=[check_positive])
+    alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class DeletingAnomaliesMethodInterquartile(forms.Form):
-    low_quant = forms.FloatField(required=False, validators=[check_positive])
-    up_quant = forms.FloatField(required=False, validators=[check_positive])
-    coef = forms.FloatField(required=False, validators=[check_positive])
+    low_quant = forms.FloatField(required=False, validators=[check_zero_one])
+    up_quant = forms.FloatField(required=False, validators=[check_zero_one])
+    coef = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class DeletingAnomaliesMethodIsolationForest(forms.Form):
     n_estimators = forms.IntegerField(required=False, validators=[check_positive])
-    contamination = forms.FloatField(required=False, validators=[check_positive])
+    contamination = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class DeletingAnomaliesMethodElliptic(forms.Form):
-    contamination = forms.FloatField(required=False, validators=[check_positive])
+    contamination = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class DeletingAnomaliesMethodSVM(forms.Form):
@@ -94,12 +109,12 @@ class DeletingAnomaliesMethodSVM(forms.Form):
 
 
 class DeletingAnomaliesMethodApproximate(forms.Form):
-    deviation = forms.IntegerField(required=False, validators=[check_positive])
+    deviation = forms.IntegerField(required=False)
 
 
 class DeletingAnomaliesMethodLocalFactor(forms.Form):
     neigh = forms.IntegerField(required=False, validators=[check_positive])
-    contamination = forms.FloatField(required=False, validators=[check_positive])
+    contamination = forms.FloatField(required=False, validators=[check_zero_one])
 
     choices = get_choices(['auto', 'ball_tree', 'kd_tree', 'brute'])
     algorithm = forms.ChoiceField(choices=choices, required=False, initial="")
@@ -114,19 +129,19 @@ class FeatureSelectionMethodSelectKBest(forms.Form):
 
 
 class FeatureSelectionMethodSelectPercentile(forms.Form):
-    percentile = forms.IntegerField(required=False, validators=[check_positive])
+    percentile = forms.IntegerField(required=False, validators=[check_0_100])
 
 
 class FeatureSelectionMethodSelectFpr(forms.Form):
-    alpha = forms.FloatField(required=False, validators=[check_positive])
+    alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class FeatureSelectionMethodSelectFdr(forms.Form):
-    alpha = forms.FloatField(required=False, validators=[check_positive])
+    alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class FeatureSelectionMethodSelectFwe(forms.Form):
-    alpha = forms.FloatField(required=False, validators=[check_positive])
+    alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
 class FeatureSelectionMethodGenericUnivariateSelect(forms.Form):
@@ -178,19 +193,23 @@ class NeuralNetwork(forms.Form):
     choices = get_choices(['constant', 'invscaling', 'adaptive'])
     learning_rate = forms.ChoiceField(choices=choices, required=False, initial="")
 
+    learning_rate_init = forms.FloatField(required=False, validators=[check_positive_with_zero])
+
 
 class DecisionTree(forms.Form):
     choices = get_choices(['gini', 'entropy'])
     criterion = forms.ChoiceField(choices=choices, required=False, initial="")
 
     max_depth = forms.IntegerField(required=False, validators=[check_positive])
+    min_samples_split = forms.IntegerField(required=False, validators=[check_positive])
+    min_samples_leaf = forms.IntegerField(required=False, validators=[check_positive])
 
 
 class LogisticRegression(forms.Form):
     choices = get_choices(['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'])
     solver = forms.ChoiceField(choices=choices, required=False, initial="")
 
-    choices = get_choices(['l1', 'l2', 'elasticnet'])
+    choices = get_choices(['l1', 'l2', 'elasticnet', 'none'])
     penalty = forms.ChoiceField(choices=choices, required=False, initial="")
 
 

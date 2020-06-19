@@ -50,10 +50,12 @@ def button_click_tracking(request):
     if "button send" in request.POST.keys():
         response = post_form_1(request)
         data = {}
-        for key, value in response["data"].items():
-            data[key.replace(' ', '_') if key != 'test_ratio' else key] = value
-        url_get_data = urlencode(data)
-        return redirect(f'/2/?{url_get_data}')
+        if response["data"]:
+            for key, value in response["data"].items():
+                data[key.replace(' ', '_') if key != 'test_ratio' else key] = value
+            url_get_data = urlencode(data)
+            return redirect(f'/2/?{url_get_data}')
+        return render(request, "form_1.html", response)
     else:
         form_1 = Form1(request.POST)
         response = {"form_1": form_1,
@@ -127,18 +129,15 @@ def post_form_2(request, common_params):
     base_algorithms = {}
     if common_params['neural network number'] not in [0, None]:
         for i in range(common_params['neural network number']):
-            algorithm_name = f'neural network #{i + 1}'
-            neural_network = NeuralNetwork(request.POST, prefix=algorithm_name)
+            neural_network = NeuralNetwork(request.POST, prefix=f'neural_network_{i+1}')
             base_algorithms[f'neural network #{i+1}'] = neural_network
     if common_params['decision tree number'] not in [0, None]:
         for i in range(common_params['decision tree number']):
-            algorithm_name = f'decision tree #{i + 1}'
-            decision_tree = DecisionTree(request.POST, prefix=algorithm_name)
+            decision_tree = DecisionTree(request.POST, prefix=f'decision_tree_{i+1}')
             base_algorithms[f'decision tree #{i+1}'] = decision_tree
     if common_params['logistic regression number'] not in [0, None]:
         for i in range(common_params['logistic regression number']):
-            algorithm_name = f'logistic regression #{i+1}'
-            logistic_regression = LogisticRegression(request.POST, prefix=algorithm_name)
+            logistic_regression = LogisticRegression(request.POST, prefix=f'logistic_regression_{i+1}')
             base_algorithms[f'logistic regression #{i+1}'] = logistic_regression
 
     all_params = {
@@ -169,7 +168,6 @@ def post_form_2(request, common_params):
                 all_params["base algorithms"][key][field] = base_algorithms[key].cleaned_data[field]
 
     all_params["name of model"] = common_params["name of model"]
-    all_params["default"] = common_params["default"]
 
     if filling_gaps_method.is_valid():
         if common_params["filling gaps method"] not in ["HardRemoval", "LinearImputer"]:
@@ -202,7 +200,8 @@ def post_form_2(request, common_params):
         "feature_selection_method": feature_selection_method,
         "composition_method": composition_method,
         "base_algorithms": base_algorithms,
-        "data": all_params
+        "data": all_params,
+        "logistic_regression_number": common_params['logistic regression number']
     }
 
     return response
@@ -215,10 +214,16 @@ def button_click_tracking_2(request):
     data = dict(request.GET)
     common_params = {}
     for key, value in data.items():
-        if key in ['default', 'neural_network_number', 'decision_tree_number', 'logistic_regression_number']:
-            value[0] = int(value[0])
+        if key in ['neural_network_number', 'decision_tree_number', 'logistic_regression_number']:
+            if value[0] != 'None':
+                value[0] = int(value[0])
+            else:
+                value[0] = 0
         if key == 'test_ratio':
-            value[0] = float(value[0])
+            if value[0] != 'None':
+                value[0] = float(value[0])
+            else:
+                value[0] = None
         common_params[key.replace('_', ' ') if key != 'test_ratio' else key] = value[0]
 
     # print(common_params)
