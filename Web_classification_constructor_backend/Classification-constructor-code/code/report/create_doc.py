@@ -5,35 +5,11 @@ from docx.shared import Inches
 from sklearn.metrics import confusion_matrix, classification_report
 import re
 import os
+import json
 
-all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
-              'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
-              'feature selection method': {'RFE': {'n_features_to_select': 8, 'step': 1}},
-              'base algorithms': {'neural network #1': {'activation': 'logistic',
-                                                        'solver': 'lbfgs',
-                                                        'learning_rate': 'constant',
-                                                        'learning_rate_init': 0.05},
-                                  'neural network #2': {'activation': 'tanh',
-                                                        'solver': 'sgd',
-                                                        'learning_rate': 'invscaling',
-                                                        'learning_rate_init': 0.01},
-                                  'logistic regression #1': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'logistic regression #2': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'decision tree #1': {'criterion': 'entropy', 'max_depth': 6, 'min_samples_split': 5,
-                                                       'min_samples_leaf': 2}},
-              'name of model': 'model1',
-              'filling gaps method': 'LinearImputer',
-              'composition method': 'voting',
-              'test_ratio': 0.25,
-              'common params': {'name of model': 'model1',
-                                'filling gaps method': 'LinearImputer',
-                                'deleting anomalies method': 'Elliptic',
-                                'feature selection method': 'RFE',
-                                'composition method': 'voting',
-                                'neural network number': 2,
-                                'decision tree number': 0,
-                                'logistic regression number': 2,
-                                'test_ratio': 0.25}}  # это заглушка
+
+with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+    all_params = json.load(json_file)
 
 
 def table_to_doc(doc, header, nrows, ncols, matrix):
@@ -147,10 +123,10 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     create_heading(doc=doc, text='Характеристики модели', level=1, alignment=1)
 
     # Model description
-    if all_params['default'] == 1:
-        model_type = 'По умолчанию'
-    else:
-        model_type = 'Собственная'
+    # if all_params['default'] == 1:
+    #     model_type = 'По умолчанию'
+    # else:
+    #     model_type = 'Собственная'
 
     composition_method = all_params['common params']['composition method']
     n_base_models = len(all_params['base algorithms'].keys())
@@ -164,7 +140,7 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     doc.add_paragraph().add_run().add_text(f'Метод отбора признаков: {fs_method}')
     doc.add_paragraph().add_run().add_text(f'Метод заполнения пропусков: {fill_null_method}')
     doc.add_paragraph().add_run().add_text(f'Метод выявления аномалий: {anomalies_method}')
-    doc.add_paragraph().add_run().add_text(f'Тип модели: {model_type}')
+    # doc.add_paragraph().add_run().add_text(f'Тип модели: {model_type}')
     doc.add_paragraph().add_run().add_text(f'Метод композиции: {composition_method}')
     doc.add_paragraph().add_run().add_text(f'Количество базовых моделей: {n_base_models}')
     doc.add_paragraph().add_run().add_text(f'Базовые модели:')
@@ -186,26 +162,21 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
             add_graph(doc=doc,
                       img_path=os.path.join(os.path.dirname(__file__), '..', '..',
-                                            'App/images/{}/ROC_curve {}.png'.format(
-                                                all_params['name of model with time of create'],
-                                                key)),
+                                            'App/images/ROC_curve {}.png'.format(key)),
                       imp_text=f'Рис.{img} Roc-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('PR-кривая', style='List Bullet 2')
             add_graph(doc=doc,
                       img_path=os.path.join(os.path.dirname(__file__), '..', '..',
-                                            'App/images/{}/PR_curve {}.png'.format(
-                                                all_params['name of model with time of create'],
-                                                key)),
+                                            'App/images/PR_curve {}.png'.format(key)),
                       imp_text=f'Рис.{img} PR-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('Distribution graph', style='List Bullet 2')
             add_graph(doc=doc,
                       img_path=os.path.join(os.path.dirname(__file__), '..', '..',
-                                            'App/images/{}/Distribution_graph {}.png'.format(
-                                                all_params['name of model with time of create'], key)),
+                                            'App/images/Distribution_graph {}.png'.format(key)),
                       imp_text=f'Рис.{img} Гистограмма распределения предсказаний модели {key}', width=width,
                       height=height)
             img += 1
@@ -225,28 +196,24 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     create_heading(doc, text='Визуализация результатов', level=2, alignment=0)
 
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/ROC_curve.png'.format(
-                  all_params['name of model with time of create'])),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/ROC_curve.png'),
               imp_text=f'Рис.{img} Roc-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/PR_curve.png'.format(
-                  all_params['name of model with time of create'])),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/PR_curve.png'),
               imp_text=f'Рис.{img} PR-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/PR_by_prc.png'.format(
-                  all_params['name of model with time of create'])),
+              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/PR_by_prc.png'),
               imp_text=f'Рис.{img} График precision и recall по перцентилям', width=width, height=height)
     img += 1
     add_graph(doc=doc, img_path=os.path.join(os.path.dirname(__file__), '..', '..',
-                                             'App/images/{}/Distribution_graph final_model.png'.format(
-                                                 all_params['name of model with time of create'])),
+                                             'App/images/Distribution_graph final_model.png'),
               imp_text=f'Рис.{img} Гистограмма распределения предсказаний итоговой модели', width=width, height=height)
 
     test_ex = np.vstack((pred_test.columns, pred_test.head(10).values))
     table_to_doc(doc=doc, header='Предсказание на тестовой выборке', nrows=11, ncols=3, matrix=test_ex)
 
     path_to_final_word = os.path.join(os.path.dirname(__file__), '..', '..',
-                                      'Output/{}/fin.docx'.format(all_params['name of model with time of create']))
+                                      'Output/fin.docx')
     doc.save(path_to_final_word)

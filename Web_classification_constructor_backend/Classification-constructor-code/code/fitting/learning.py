@@ -1,35 +1,11 @@
 import importlib
 import re
+import os
+import json
 
-all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
-              'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
-              'feature selection method': {'RFE': {'n_features_to_select': 8, 'step': 1}},
-              'base algorithms': {'neural network #1': {'activation': 'logistic',
-                                                        'solver': 'lbfgs',
-                                                        'learning_rate': 'constant',
-                                                        'learning_rate_init': 0.05},
-                                  'neural network #2': {'activation': 'tanh',
-                                                        'solver': 'sgd',
-                                                        'learning_rate': 'invscaling',
-                                                        'learning_rate_init': 0.01},
-                                  'logistic regression #1': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'logistic regression #2': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'decision tree #1': {'criterion': 'entropy', 'max_depth': 6, 'min_samples_split': 5,
-                                                       'min_samples_leaf': 2}},
-              'name of model': 'model1',
-              'filling gaps method': 'LinearImputer',
-              'composition method': 'voting',
-              'test_ratio': 0.25,
-              'common params': {'name of model': 'model1',
-                                'filling gaps method': 'LinearImputer',
-                                'deleting anomalies method': 'Elliptic',
-                                'feature selection method': 'RFE',
-                                'composition method': 'voting',
-                                'neural network number': 2,
-                                'decision tree number': 0,
-                                'logistic regression number': 2,
-                                'test_ratio': 0.25}}  # это заглушка
 
+with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+    all_params = json.load(json_file)
 
 def load_class(full_name):
     """

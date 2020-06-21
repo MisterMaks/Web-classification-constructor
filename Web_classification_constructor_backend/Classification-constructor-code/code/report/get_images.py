@@ -4,35 +4,11 @@ from sklearn.metrics import *
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import json
 
-all_params = {'name of model with time of create': 'model1(2020-01-07-16-38-31)',
-              'deleting anomalies method': {'Elliptic': {'contamination': 0.1}},
-              'feature selection method': {'RFE': {'n_features_to_select': 8, 'step': 1}},
-              'base algorithms': {'neural network #1': {'activation': 'logistic',
-                                                        'solver': 'lbfgs',
-                                                        'learning_rate': 'constant',
-                                                        'learning_rate_init': 0.05},
-                                  'neural network #2': {'activation': 'tanh',
-                                                        'solver': 'sgd',
-                                                        'learning_rate': 'invscaling',
-                                                        'learning_rate_init': 0.01},
-                                  'logistic regression #1': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'logistic regression #2': {'solver': 'lbfgs', 'penalty': 'l2'},
-                                  'decision tree #1': {'criterion': 'entropy', 'max_depth': 6, 'min_samples_split': 5,
-                                                       'min_samples_leaf': 2}},
-              'name of model': 'model1',
-              'filling gaps method': 'LinearImputer',
-              'composition method': 'voting',
-              'test_ratio': 0.25,
-              'common params': {'name of model': 'model1',
-                                'filling gaps method': 'LinearImputer',
-                                'deleting anomalies method': 'Elliptic',
-                                'feature selection method': 'RFE',
-                                'composition method': 'voting',
-                                'neural network number': 2,
-                                'decision tree number': 0,
-                                'logistic regression number': 2,
-                                'test_ratio': 0.25}}  # это заглушка
+
+with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+    all_params = json.load(json_file)
 
 
 def getting_estimators(pickle_path, X_test, y_test):
@@ -124,9 +100,9 @@ def create_hist(ones, zeros, name):
     plt.xlabel('Score', size=15)
     plt.ylabel('Число набрюдений', size=15)
     plt.legend()
-    plt.savefig(os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/Distribution_graph {}.png'.format(
-        all_params['name of model with time of create'], name)),
-                dpi=200)
+    plt.savefig(
+        os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/Distribution_graph {}.png'.format(name)),
+        dpi=200)
 
 
 def get_all_images(estimators_prob, y_true):
@@ -139,8 +115,7 @@ def get_all_images(estimators_prob, y_true):
     for key, value in estimators_prob.items():
         fpr, tpr, thr = roc_curve(y_true, value)
         create_plot([(fpr, tpr, key)], 'False Positive Rate', 'True Positive Rate', 'ROC curve',
-                    os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/{}/ROC_curve {}.png'.format(
-                        all_params['name of model with time of create'], key)),
+                    os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/ROC_curve {}.png'.format(key)),
                     diag=True)
     arr = []
     for key, value in estimators_prob.items():
@@ -148,15 +123,14 @@ def get_all_images(estimators_prob, y_true):
         arr.append((fpr, tpr, key))
     create_plot(arr, 'False Positive Rate', 'True Positive Rate', 'ROC curve',
                 os.path.join(os.path.dirname(__file__), '..', '..',
-                             'App/images/{}/ROC_curve.png'.format(all_params['name of model with time of create'])),
+                             'App/images/ROC_curve.png'),
                 diag=True)
 
     for key, value in estimators_prob.items():
         precision, recall, thr = precision_recall_curve(y_true, value)
         create_plot([(recall, precision, key)], 'Recall', 'Precision', 'PR curve',
                     os.path.join(os.path.dirname(__file__), '..', '..',
-                                 'App/images/{}/PR_curve {}.png'.format(all_params['name of model with time of create'],
-                                                                        key)))
+                                 'App/images/PR_curve {}.png'.format(key)))
 
     arr = []
     for key, value in estimators_prob.items():
@@ -164,7 +138,7 @@ def get_all_images(estimators_prob, y_true):
         arr.append((recall, precision, key))
     create_plot(arr, 'Recall', 'Precision', 'PR curve',
                 os.path.join(os.path.dirname(__file__), '..', '..',
-                             'App/images/{}/PR_curve.png'.format(all_params['name of model with time of create'])))
+                             'App/images/PR_curve.png'))
 
     for key, value in estimators_prob.items():
         ones = [x[1] for x in zip(y_true, value) if x[0] == 1]
@@ -192,5 +166,5 @@ def get_all_images(estimators_prob, y_true):
                                                      fontsize=14)
     fig = ax.get_figure()
     fig.savefig(os.path.join(os.path.dirname(__file__), '..', '..',
-                             'App/images/{}/PR_by_prc.png'.format(all_params['name of model with time of create'])),
+                             'App/images/PR_by_prc.png'),
                 dpi=200)

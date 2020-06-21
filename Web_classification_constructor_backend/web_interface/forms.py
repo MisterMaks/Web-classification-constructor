@@ -38,7 +38,7 @@ class Form1(forms.Form):
     # choices = [(1, 1), (2, 2), (3, 3)]
     # field_3 = forms.ChoiceField(choices=choices, required=False, initial="", help_text=" - Выбор")
 
-    name_of_model = forms.CharField(required=False, initial="", empty_value=None, label="Название модели")
+    # name_of_model = forms.CharField(required=False, initial="", empty_value=None, label="Название модели")
 
     choices = get_choices(['HardRemoval', 'InsertMeanMode', 'LinearImputer'])
     filling_gaps_method = forms.ChoiceField(choices=choices, required=False, initial="",
@@ -214,5 +214,6 @@ class LogisticRegression(forms.Form):
 
 
 class UploadFileForm(forms.Form):
-    title = forms.CharField(max_length=50)
-    file = forms.FileField()
+    # title = forms.CharField(max_length=50)
+    file_train = forms.FileField()
+    file_test = forms.FileField()

@@ -15,9 +15,11 @@ from .forms import CompositionMethodVoting, CompositionMethodAdaboost, Compositi
 from .forms import NeuralNetwork, DecisionTree, LogisticRegression
 from .forms import UploadFileForm
 from Web_classification_constructor_backend.settings import MEDIA_ROOT
+from packages.check_df import check_df
 import datetime
 from urllib.parse import urlencode
 import json
+import os
 
 # Create your views here.
 
@@ -69,8 +71,8 @@ def button_click_tracking(request):
 def post_form_2(request, common_params):
     # print(common_params)
 
-    name_of_model_with_time_of_create = f"{common_params['name of model']}" \
-        f"({datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')})"
+    # name_of_model_with_time_of_create = f"{common_params['name of model']}" \
+    #     f"({datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')})"
 
     # filling_gaps_method = FillingGapsMethodInsertMeanMode(request.POST, prefix="filling_gaps_method")
     if common_params['filling gaps method'] == 'InsertMeanMode':
@@ -141,7 +143,7 @@ def post_form_2(request, common_params):
             base_algorithms[f'logistic regression #{i+1}'] = logistic_regression
 
     all_params = {
-        "name of model with time of create": name_of_model_with_time_of_create
+        # "name of model with time of create": name_of_model_with_time_of_create
     }
 
     if deleting_anomalies_method.is_valid():
@@ -167,7 +169,7 @@ def post_form_2(request, common_params):
             for field in base_algorithms[key].cleaned_data.keys():
                 all_params["base algorithms"][key][field] = base_algorithms[key].cleaned_data[field]
 
-    all_params["name of model"] = common_params["name of model"]
+    # all_params["name of model"] = common_params["name of model"]
 
     if filling_gaps_method.is_valid():
         if common_params["filling gaps method"] not in ["HardRemoval", "LinearImputer"]:
@@ -190,7 +192,7 @@ def post_form_2(request, common_params):
             all_params["composition method"] = common_params["composition method"]
 
     all_params["test_ratio"] = common_params["test_ratio"]
-    all_params["common_params"] = common_params
+    all_params["common params"] = common_params
 
     print(all_params)
 
@@ -242,9 +244,12 @@ def button_click_tracking_2(request):
 
 
 def handle_uploaded_file(file, filename):
-    with open(f"{MEDIA_ROOT}/{filename}", 'wb+') as destination:
+    path = os.path.join(os.path.dirname(__file__), '..', 'Classification-constructor-code', 'Input', filename)
+
+    with open(path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
+
 
 
 @csrf_exempt
@@ -256,12 +261,15 @@ def button_click_tracking_3(request):
     if "button send 3" in request.POST.keys():
         upload_file_form = UploadFileForm(request.POST, request.FILES)
         if upload_file_form.is_valid():
-            filename = upload_file_form.cleaned_data['title']
-            handle_uploaded_file(request.FILES['file'], filename)
-            response = {
-                "upload_file_form": upload_file_form,
-                "data": "Файл загружен"
-            }
+            if not check_df(request.FILES['file_train'], is_train=True):
+                response = {"data": "Проблема с файлом train"}
+            elif not check_df(request.FILES['file_test'], is_train=False):
+                response = {"data": "Проблема с файлом test"}
+            else:
+                handle_uploaded_file(request.FILES['file_train'], 'train.csv')
+                handle_uploaded_file(request.FILES['file_test'], 'test.csv')
+                response = {"data": "Файлы загружены"}
+            response["upload_file_form"] = upload_file_form
             return render(request, "form_3.html", response)
     else:
         upload_file_form = UploadFileForm()

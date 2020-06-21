@@ -7,7 +7,7 @@ def check_df(path, is_train=True):
         try:
             df = pd.read_csv(path)
         except Exception:
-            # print('Проблемы с чтением csv-файла')
+            print('Проблемы с чтением csv-файла')
             return False
 
         if 'id' not in df.columns:
