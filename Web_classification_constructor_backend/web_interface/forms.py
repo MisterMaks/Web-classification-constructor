@@ -215,5 +215,5 @@ class LogisticRegression(forms.Form):
 
 class UploadFileForm(forms.Form):
     # title = forms.CharField(max_length=50)
-    file_train = forms.FileField()
-    file_test = forms.FileField()
+    file_train = forms.FileField(required=False)
+    file_test = forms.FileField(required=False)

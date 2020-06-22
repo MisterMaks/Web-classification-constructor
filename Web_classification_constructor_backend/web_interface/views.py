@@ -16,10 +16,12 @@ from .forms import NeuralNetwork, DecisionTree, LogisticRegression
 from .forms import UploadFileForm
 from Web_classification_constructor_backend.settings import MEDIA_ROOT
 from packages.check_df import check_df
-import datetime
+from Classification_constructor_code.code.main import main_function
 from urllib.parse import urlencode
 import json
 import os
+from zipfile import ZipFile
+
 
 # Create your views here.
 
@@ -88,9 +90,11 @@ def post_form_2(request, common_params):
     if common_params['deleting anomalies method'] == 'Grubbs':
         deleting_anomalies_method = DeletingAnomaliesMethodGrubbs(request.POST, prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'Interquartile':
-        deleting_anomalies_method = DeletingAnomaliesMethodInterquartile(request.POST, prefix="deleting_anomalies_method")
+        deleting_anomalies_method = DeletingAnomaliesMethodInterquartile(request.POST,
+                                                                         prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'IsolationForest':
-        deleting_anomalies_method = DeletingAnomaliesMethodIsolationForest(request.POST, prefix="deleting_anomalies_method")
+        deleting_anomalies_method = DeletingAnomaliesMethodIsolationForest(request.POST,
+                                                                           prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'Elliptic':
         deleting_anomalies_method = DeletingAnomaliesMethodElliptic(request.POST, prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'SVM':
@@ -102,11 +106,13 @@ def post_form_2(request, common_params):
 
     # feature_selection_method = FeatureSelectionMethodVarianceThreshold(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'VarianceThreshold':
-        feature_selection_method = FeatureSelectionMethodVarianceThreshold(request.POST, prefix="feature_selection_method")
+        feature_selection_method = FeatureSelectionMethodVarianceThreshold(request.POST,
+                                                                           prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectKBest':
         feature_selection_method = FeatureSelectionMethodSelectKBest(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectPercentile':
-        feature_selection_method = FeatureSelectionMethodSelectPercentile(request.POST, prefix="feature_selection_method")
+        feature_selection_method = FeatureSelectionMethodSelectPercentile(request.POST,
+                                                                          prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectFpr':
         feature_selection_method = FeatureSelectionMethodSelectFpr(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectFdr':
@@ -114,11 +120,13 @@ def post_form_2(request, common_params):
     if common_params['feature selection method'] == 'SelectFwe':
         feature_selection_method = FeatureSelectionMethodSelectFwe(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'GenericUnivariateSelect':
-        feature_selection_method = FeatureSelectionMethodGenericUnivariateSelect(request.POST, prefix="feature_selection_method")
+        feature_selection_method = FeatureSelectionMethodGenericUnivariateSelect(request.POST,
+                                                                                 prefix="feature_selection_method")
     if common_params['feature selection method'] == 'RFE':
         feature_selection_method = FeatureSelectionMethodRFE(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectFromModel':
-        feature_selection_method = FeatureSelectionMethodSelectFromModel(request.POST, prefix="feature_selection_method")
+        feature_selection_method = FeatureSelectionMethodSelectFromModel(request.POST,
+                                                                         prefix="feature_selection_method")
 
     # composition_method = CompositionMethodVoting(request.POST, prefix="composition_method")
     if common_params['composition method'] == 'voting':
@@ -131,16 +139,16 @@ def post_form_2(request, common_params):
     base_algorithms = {}
     if common_params['neural network number'] not in [0, None]:
         for i in range(common_params['neural network number']):
-            neural_network = NeuralNetwork(request.POST, prefix=f'neural_network_{i+1}')
-            base_algorithms[f'neural network #{i+1}'] = neural_network
+            neural_network = NeuralNetwork(request.POST, prefix=f'neural_network_{i + 1}')
+            base_algorithms[f'neural network #{i + 1}'] = neural_network
     if common_params['decision tree number'] not in [0, None]:
         for i in range(common_params['decision tree number']):
-            decision_tree = DecisionTree(request.POST, prefix=f'decision_tree_{i+1}')
-            base_algorithms[f'decision tree #{i+1}'] = decision_tree
+            decision_tree = DecisionTree(request.POST, prefix=f'decision_tree_{i + 1}')
+            base_algorithms[f'decision tree #{i + 1}'] = decision_tree
     if common_params['logistic regression number'] not in [0, None]:
         for i in range(common_params['logistic regression number']):
-            logistic_regression = LogisticRegression(request.POST, prefix=f'logistic_regression_{i+1}')
-            base_algorithms[f'logistic regression #{i+1}'] = logistic_regression
+            logistic_regression = LogisticRegression(request.POST, prefix=f'logistic_regression_{i + 1}')
+            base_algorithms[f'logistic regression #{i + 1}'] = logistic_regression
 
     all_params = {
         # "name of model with time of create": name_of_model_with_time_of_create
@@ -244,12 +252,35 @@ def button_click_tracking_2(request):
 
 
 def handle_uploaded_file(file, filename):
-    path = os.path.join(os.path.dirname(__file__), '..', 'Classification-constructor-code', 'Input', filename)
+    path = os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', filename)
 
     with open(path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
 
+
+def create_archive():
+    current = os.path.dirname(__file__)
+    z = ZipFile(os.path.join(current, '..', 'user_files', 'results.zip'), 'w')
+    path = os.path.join(current, '..', 'Classification_constructor_code', 'App', 'images')
+    for image in os.listdir(path):
+        z.write(os.path.join(path, image), arcname=f'Images/{image}')
+        os.remove(os.path.join(path, image))
+    path = os.path.join(current, '..', 'Classification_constructor_code', 'App', 'models')
+    for model in os.listdir(path):
+        z.write(os.path.join(path, model), arcname=f'Models/{model}')
+        os.remove(os.path.join(path, model))
+    path = os.path.join(current, '..', 'Classification_constructor_code', 'Output')
+    for file in os.listdir(path):
+        z.write(os.path.join(path, file), arcname=f'Files/{file}')
+        os.remove(os.path.join(path, file))
+    z.close()
+
+
+def remove_tmp():
+    os.remove(os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', 'train.csv'))
+    os.remove(os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', 'test.csv'))
+    os.remove(os.path.join(os.path.dirname(__file__), '..', 'user_files', 'user_all_params.json'))
 
 
 @csrf_exempt
@@ -259,18 +290,46 @@ def button_click_tracking_3(request):
     if "button exit" in request.POST.keys():
         return redirect("/logout")
     if "button send 3" in request.POST.keys():
-        upload_file_form = UploadFileForm(request.POST, request.FILES)
-        if upload_file_form.is_valid():
-            if not check_df(request.FILES['file_train'], is_train=True):
-                response = {"data": "Проблема с файлом train"}
-            elif not check_df(request.FILES['file_test'], is_train=False):
-                response = {"data": "Проблема с файлом test"}
-            else:
-                handle_uploaded_file(request.FILES['file_train'], 'train.csv')
-                handle_uploaded_file(request.FILES['file_test'], 'test.csv')
-                response = {"data": "Файлы загружены"}
-            response["upload_file_form"] = upload_file_form
-            return render(request, "form_3.html", response)
+        if 'file_train' in request.FILES and 'file_test' in request.FILES:
+            upload_file_form = UploadFileForm(request.POST, request.FILES)
+            if upload_file_form.is_valid():
+                check_train = check_df(request.FILES['file_train'], is_train=True)
+                check_test = check_df(request.FILES['file_test'], is_train=False)
+                if not check_train[0]:
+                    response = {"data": check_train[1]}
+                elif not check_test[0]:
+                    response = {"data": check_test[1]}
+                else:
+                    handle_uploaded_file(request.FILES['file_train'], 'train.csv')
+                    handle_uploaded_file(request.FILES['file_test'], 'test.csv')
+                    response = {"data": "Файлы загружены", "begin_work": True}
+                response["upload_file_form"] = upload_file_form
+                return render(request, "form_3.html", response)
+        else:
+            return render(request, "form_3.html", {'upload_file_form': UploadFileForm()})
+    if "button send 4" in request.POST.keys():
+
+        main_function()
+        create_archive()
+        stages_dict = {
+            'Считывание файлов': 'Завершено',
+            'Заполнение пропусков': 'Завершено',
+            'Удаление выбросов': 'Завершено',
+            'Нормализация': 'Завершено',
+            'Отбор признаков': 'Завершено',
+            'Обучение': 'Завершено',
+            'Предсказание': 'Завершено',
+            'Создание архива с результатами': 'Завершено'
+        }
+        with open(f"{MEDIA_ROOT}/stages.json", 'w') as stages_json:
+            json.dump(stages_dict, stages_json, ensure_ascii=False)
+        remove_tmp()
+
+        response = {
+            "data": "Work is completed!!!",
+            "upload_file_form": UploadFileForm()
+        }
+        return render(request, "form_3.html", response)
     else:
         upload_file_form = UploadFileForm()
     return render(request, 'form_3.html', {'upload_file_form': upload_file_form})
