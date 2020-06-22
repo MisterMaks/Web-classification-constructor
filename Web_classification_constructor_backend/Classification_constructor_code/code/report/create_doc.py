@@ -6,10 +6,11 @@ from sklearn.metrics import confusion_matrix, classification_report
 import re
 import os
 import json
+from datetime import datetime
 
 
-with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
-    all_params = json.load(json_file)
+# with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+#     all_params = json.load(json_file)
 
 
 def table_to_doc(doc, header, nrows, ncols, matrix):
@@ -65,6 +66,10 @@ def get_confusion_matrix(estimators_pred, y_true):
                   'True = 0', fp, tn, fp + tn,
                   'Sum', tp + fp, fn + tn, tp + fp + fn + tn]
 
+        with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+                               'user_all_params.json')) as json_file:
+            all_params = json.load(json_file)
+
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
             confusion_m[key] = np.array(matrix).reshape(4, 4)
         else:
@@ -87,6 +92,9 @@ def get_clssif_report(estimators_pred, y_true):
         s = re.sub('weighted avg', 'weighted_avg', s)
         s = re.sub('\n', ' ', s)
         report = [''] + [x for x in s.split(' ') if x != ''][:15] + ['', ''] + [x for x in s.split(' ') if x != ''][15:]
+        with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+                               'user_all_params.json')) as json_file:
+            all_params = json.load(json_file)
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
             clssif_report[key] = np.array(report).reshape(6, 5)
         else:
@@ -112,7 +120,7 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     width = 6
     height = 5
 
-    create_heading(doc=doc, text=f'Отчет о результатах обучения модели {pickle_path} по обучающей выборке {train_path}',
+    create_heading(doc=doc, text=f'Отчет о результатах обучения модели от {datetime.today().strftime("%Y-%m-%d-%H-%M-%S")}',
                    level=0, alignment=0)
     create_heading(doc=doc, text='Характеристики обучающей выборки', level=1, alignment=1)
 
@@ -127,6 +135,9 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     #     model_type = 'По умолчанию'
     # else:
     #     model_type = 'Собственная'
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+                           'user_all_params.json')) as json_file:
+        all_params = json.load(json_file)
 
     composition_method = all_params['common params']['composition method']
     n_base_models = len(all_params['base algorithms'].keys())

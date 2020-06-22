@@ -7,8 +7,8 @@ import os
 import json
 
 
-with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
-    all_params = json.load(json_file)
+# with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+#     all_params = json.load(json_file)
 
 
 def getting_estimators(pickle_path, X_test, y_test):
@@ -26,6 +26,9 @@ def getting_estimators(pickle_path, X_test, y_test):
     estimators_pred = {}
     estimators_prob = {}
 
+    with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+                           'user_all_params.json')) as json_file:
+        all_params = json.load(json_file)
     if all_params['common params']['composition method'] in ['voting', 'stacking']:
         for name, mod in zip(model.ensamble.estimators, model.ensamble.estimators_):
             y_prob = mod.predict_proba(X_test)[:, 1]

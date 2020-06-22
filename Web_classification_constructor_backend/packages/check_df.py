@@ -7,31 +7,25 @@ def check_df(path, is_train=True):
         try:
             df = pd.read_csv(path)
         except Exception:
-            print('Проблемы с чтением csv-файла')
-            return False
+            return False, 'Проблемы с чтением csv-файла'
 
         if 'id' not in df.columns:
-            print('нет поля id')
-            return False
+            return False, 'Нет поля id'
         if is_train:
             if 'target' not in df.columns:
-                print('для train нет поля target')
-                return False
-            if df['target'].nunique() != 2:
-                print('not 2 marks')
-                return False
+                return False, 'Для train нет поля target'
             if df['target'].max() != 1:
-                print('pos value is not 1')
-                return False
+                return False, 'В target есть значения больше единицы'
             if df['target'].min() != 0:
-                print('neg value is not 0')
-                return False
+                return False, 'В target есть значения меньше нуля'
+            if df['target'].nunique() != 2:
+                return False, 'В target есть значения помимо нуля и единицы'
         numeric_types = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
         for column in df.columns:
             if column != 'id' and df[column].dtype not in numeric_types:
-                print(f'{column} is not numeric column')
+                print(f'{column} не числовая колонка. Удалите ее или создайте категориальную(-ые) переменную(-ые)')
                 return False
-        return True
+        return True, 'Файл загружен'
     except Exception:
         print('что-то пошло не так...')
         return False
