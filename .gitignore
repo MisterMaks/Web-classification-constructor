@@ -7,3 +7,6 @@ Web_classification_constructor_backend/Web_classification_constructor_backend/lo
 Web_classification_constructor_backend/db.sqlite3
 migrations/
 user_files/
+Web_classification_constructor_backend/Classification-constructor-code/Input/test.csv
+Web_classification_constructor_backend/Classification-constructor-code/Input/train.csv
+test_ajax_code.txt
