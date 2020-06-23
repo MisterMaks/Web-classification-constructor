@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,19 @@ from zipfile import ZipFile
 
 
 # Create your views here.
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def button_click_tracking_main_page(request):
+    if "button exit" in request.POST.keys():
+        return redirect("/logout")
+    elif "button create model" in request.POST.keys():
+        return redirect("/1")
+    else:
+        return render(request, "main_page.html")
+
 
 
 @csrf_exempt
@@ -60,6 +74,8 @@ def button_click_tracking(request):
             url_get_data = urlencode(data)
             return redirect(f'/2/?{url_get_data}')
         return render(request, "form_1.html", response)
+    elif "button to main page" in request.POST.keys():
+        return redirect("/")
     else:
         form_1 = Form1(request.POST)
         response = {"form_1": form_1,
@@ -246,6 +262,8 @@ def button_click_tracking_2(request):
             json.dump(response["data"], all_params_file)
         return redirect(f'/3')
         # return render(request, "form_2.html", response)
+    elif "button to main page" in request.POST.keys():
+        return redirect("/")
     else:
         response = post_form_2(request, common_params)
         return render(request, "form_2.html", response)
@@ -307,29 +325,59 @@ def button_click_tracking_3(request):
                 return render(request, "form_3.html", response)
         else:
             return render(request, "form_3.html", {'upload_file_form': UploadFileForm()})
-    if "button send 4" in request.POST.keys():
-
-        main_function()
-        create_archive()
-        stages_dict = {
-            'Считывание файлов': 'Завершено',
-            'Заполнение пропусков': 'Завершено',
-            'Удаление выбросов': 'Завершено',
-            'Нормализация': 'Завершено',
-            'Отбор признаков': 'Завершено',
-            'Обучение': 'Завершено',
-            'Предсказание': 'Завершено',
-            'Создание архива с результатами': 'Завершено'
-        }
-        with open(f"{MEDIA_ROOT}/stages.json", 'w') as stages_json:
-            json.dump(stages_dict, stages_json, ensure_ascii=False)
-        remove_tmp()
-
-        response = {
-            "data": "Work is completed!!!",
-            "upload_file_form": UploadFileForm()
-        }
-        return render(request, "form_3.html", response)
+    elif "button send 4" in request.POST.keys():
+        return redirect(f'/4')
+    elif "button to main page" in request.POST.keys():
+        return redirect("/")
     else:
         upload_file_form = UploadFileForm()
     return render(request, 'form_3.html', {'upload_file_form': upload_file_form})
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def button_click_tracking_4(request):
+    if "button exit" in request.POST.keys():
+        return redirect("/logout")
+    if "button send 5" in request.POST.keys():
+        start_process()
+    if "get file" in request.POST.keys():
+        path_to_results_file = f"{MEDIA_ROOT}/results.zip"
+        file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
+        os.remove(path_to_results_file)
+        os.remove(f"{MEDIA_ROOT}/stages.json")
+        return file_response
+    if "button to main page" in request.POST.keys():
+        return redirect("/")
+    return render(request, 'form_4.html')
+
+
+def start_process():
+    main_function()
+    create_archive()
+    stages_dict = {
+        'Считывание файлов': 'Завершено',
+        'Заполнение пропусков': 'Завершено',
+        'Удаление выбросов': 'Завершено',
+        'Нормализация': 'Завершено',
+        'Отбор признаков': 'Завершено',
+        'Обучение': 'Завершено',
+        'Предсказание': 'Завершено',
+        'Создание архива с результатами': 'Завершено',
+        'Finish': True
+    }
+    with open(f"{MEDIA_ROOT}/stages.json", 'w') as stages_json:
+        json.dump(stages_dict, stages_json, ensure_ascii=False)
+    remove_tmp()
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def show_process(request):
+    if "stages.json" in os.listdir(MEDIA_ROOT):
+        with open(f"{MEDIA_ROOT}/stages.json") as stages_json:
+            stages_dict = json.load(stages_json)
+            return JsonResponse(stages_dict)
+    return JsonResponse()

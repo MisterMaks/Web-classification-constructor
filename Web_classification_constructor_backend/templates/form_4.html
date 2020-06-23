@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <div id="stages_process"></div>
+        <form method="POST">
+            <button type="submit" name="button send 5" id="begin_work">Begin work</button>
+            <button disabled type="submit" name="get file" id="get_file">Скачать отчет</button>
+            <button type="submit" name="button to main page">В начало</button>
+            <button type="submit" name="button exit">Выйти</button>
+        </form>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        let process = '';
+        let finish = false;
+        let timerId = setInterval(() =>
+            $.ajax({
+                type: "GET",
+                url: "show_process/",
+                success: function (data) {
+                    console.log(data);
+                    for (key in data) {
+                        if (data[key] === "Обрабатывается" || data[key] === "Завершено") {
+                            process += "<div>" + key + ' ' + data[key] + "</div>";
+                        }
+                        if (key === "Finish") {
+                            finish = true;
+                            clearInterval(timerId);
+                            $("#get_file")[0].disabled = false;
+                            $("#begin_work")[0].disabled = true;
+                        }
+                    }
+                    $('#stages_process')[0].innerHTML = process;
+                    process = '';
+                }
+            }), 1000);
+    </script>
+{% endblock %}

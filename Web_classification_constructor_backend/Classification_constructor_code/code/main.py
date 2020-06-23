@@ -84,7 +84,7 @@ def main_function():
     qwe.fit(X_train, y_train)
     stages_dict['Обучение'] = 'Завершено'
     stages_to_json(stages_dict)
-    print(qwe.score(X_test, y_test))
+    # print(qwe.score(X_test, y_test))
 
     pickle_path = os.path.join(os.path.dirname(__file__), '..', 'App/models/composition.pickle')
     with open(pickle_path, 'wb') as f:
