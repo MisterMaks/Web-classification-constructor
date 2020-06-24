@@ -7,7 +7,8 @@ from Classification_constructor_code.code.preprocessing.feature_selection import
 from sklearn.model_selection import train_test_split
 from Classification_constructor_code.code.fitting.learning import Learning
 from Classification_constructor_code.code.fitting.predicting import predict_test
-from Classification_constructor_code.code.report.get_images import feature_description, getting_estimators, get_all_images
+from Classification_constructor_code.code.report.get_images import feature_description, getting_estimators, \
+    get_all_images
 from Classification_constructor_code.code.report.create_doc import get_doc
 from Web_classification_constructor_backend.settings import MEDIA_ROOT
 import os
@@ -22,8 +23,7 @@ def stages_to_json(stages_dict):
 
 def main_function():
     warnings.filterwarnings('ignore')
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'user_files',
-                           'user_all_params.json')) as json_file:
+    with open(os.path.join(f"{MEDIA_ROOT}", 'user_all_params.json')) as json_file:
         all_params = json.load(json_file)
 
     stages_dict = {
@@ -38,9 +38,8 @@ def main_function():
     }
     stages_to_json(stages_dict)
 
-
-    train_path = os.path.join(os.path.dirname(__file__), '..', 'Input', 'train.csv')
-    test_path = os.path.join(os.path.dirname(__file__), '..', 'Input', 'test.csv')
+    train_path = os.path.join(f"{MEDIA_ROOT}", 'Input/train.csv')
+    test_path = os.path.join(f"{MEDIA_ROOT}", 'Input/test.csv')
 
     stages_dict['Считывание файлов'] = 'Обрабатывается'
     stages_to_json(stages_dict)
@@ -86,15 +85,15 @@ def main_function():
     stages_to_json(stages_dict)
     # print(qwe.score(X_test, y_test))
 
-    pickle_path = os.path.join(os.path.dirname(__file__), '..', 'App/models/composition.pickle')
+    pickle_path = os.path.join(f"{MEDIA_ROOT}", 'App/models/composition.pickle')
     with open(pickle_path, 'wb') as f:
-        pickle.dump(qwe, f)
+        pickle.dump([qwe, selected_cols], f)
 
     stages_dict['Предсказание'] = 'Обрабатывается'
     stages_to_json(stages_dict)
     pred_test = predict_test(test, all_params, selected_cols, pickle_path)
     pred_test_with_features = test.merge(pred_test, on='id')
-    pred_test_with_features.to_csv(os.path.join(os.path.dirname(__file__), '..', 'Output/fin_test.csv'))
+    pred_test_with_features.to_csv(os.path.join(f"{MEDIA_ROOT}", 'Output/fin_test.csv'))
     stages_dict['Предсказание'] = 'Завершено'
     stages_to_json(stages_dict)
 

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <form method="POST">
+            <button type="submit" name="button send 5 upload mode" id="begin_work">Begin work</button>
+            <button {% if get_file_upload_mode != True %} disabled {% endif %} type="submit" name="get file upload mode" id="get_file">Скачать файл</button>
+            <button type="submit" name="button to main page">В начало</button>
+            <button type="submit" name="button exit">Выйти</button>
+        </form>
+    </div>
+{% endblock %}

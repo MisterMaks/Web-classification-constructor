@@ -217,3 +217,8 @@ class UploadFileForm(forms.Form):
     # title = forms.CharField(max_length=50)
     file_train = forms.FileField(required=False)
     file_test = forms.FileField(required=False)
+
+
+class UploadModelFileForm(forms.Form):
+    trained_model = forms.FileField(required=False)
+    file_test = forms.FileField(required=False)

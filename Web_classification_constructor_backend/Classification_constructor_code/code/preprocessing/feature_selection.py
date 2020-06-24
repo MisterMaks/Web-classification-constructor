@@ -1,6 +1,7 @@
 from sklearn.feature_selection import VarianceThreshold, SelectKBest, SelectPercentile, SelectFpr, SelectFdr, SelectFwe, \
     GenericUnivariateSelect, RFE, SelectFromModel
 from sklearn.linear_model import LogisticRegression
+from Web_classification_constructor_backend.settings import MEDIA_ROOT
 import pickle
 import os
 
@@ -70,7 +71,7 @@ def feature_selection_fit(df, all_params, features):
                                    max_features=all_params['feature selection method'][selection_type]['max_features'])
         selector.fit(df[features], df['target'])
 
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', 'App/models/feature_selector.pickle'), 'wb+') as f:
+    with open(os.path.join(f"{MEDIA_ROOT}",  'App/models/feature_selector.pickle'), 'wb+') as f:
         pickle.dump(selector, f)
 
     new_cols = [x[0] for x in zip(features, selector.get_support()) if x[1] == True]

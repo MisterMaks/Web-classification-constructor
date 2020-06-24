@@ -17,7 +17,7 @@ def predict_test(test_df, all_params, selected_cols, pickle_path):
     with open(pickle_path, 'rb') as f:
         model = pickle.load(f)
 
-    y_prob_test = model.predict_proba(test_miss[selected_cols])[:, 1]
+    y_prob_test = model[0].predict_proba(test_miss[model[1]])[:, 1]
 
     prediction = pd.DataFrame([], columns=['id', 'prob', 'pred'])
     prediction['id'] = test_miss['id']

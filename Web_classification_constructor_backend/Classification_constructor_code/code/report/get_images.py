@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import json
+from Web_classification_constructor_backend.settings import MEDIA_ROOT
 
 
-# with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+# with open(os.path.join(f"{MEDIA_ROOT}" 'user_all_params.json')) as json_file:
 #     all_params = json.load(json_file)
 
 
@@ -26,22 +27,22 @@ def getting_estimators(pickle_path, X_test, y_test):
     estimators_pred = {}
     estimators_prob = {}
 
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+    with open(os.path.join(f"{MEDIA_ROOT}",
                            'user_all_params.json')) as json_file:
         all_params = json.load(json_file)
     if all_params['common params']['composition method'] in ['voting', 'stacking']:
-        for name, mod in zip(model.ensamble.estimators, model.ensamble.estimators_):
+        for name, mod in zip(model[0].ensamble.estimators, model[0].ensamble.estimators_):
             y_prob = mod.predict_proba(X_test)[:, 1]
             y_pred = np.array([1 if x > 0.5 else 0 for x in y_prob])
             estimators_pred[name[0]] = y_pred
             estimators_prob[name[0]] = y_prob
     else:
-        for mod in model.ensamble.estimators_:
+        for mod in model[0].ensamble.estimators_:
             y_prob = mod.predict_proba(X_test)[:, 1]
             y_pred = np.array([1 if x > 0.5 else 0 for x in y_prob])
 
     # предсказание на финальном алгоритме
-    y_prob = model.predict_proba(X_test)[:, 1]
+    y_prob = model[0].predict_proba(X_test)[:, 1]
     y_pred = np.array([1 if x > 0.5 else 0 for x in y_prob])
     estimators_pred['final_model'] = y_pred
     estimators_prob['final_model'] = y_prob
@@ -104,7 +105,7 @@ def create_hist(ones, zeros, name):
     plt.ylabel('Число набрюдений', size=15)
     plt.legend()
     plt.savefig(
-        os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/Distribution_graph {}.png'.format(name)),
+        os.path.join(f"{MEDIA_ROOT}", 'App/images/Distribution_graph {}.png'.format(name)),
         dpi=200)
 
 
@@ -118,21 +119,21 @@ def get_all_images(estimators_prob, y_true):
     for key, value in estimators_prob.items():
         fpr, tpr, thr = roc_curve(y_true, value)
         create_plot([(fpr, tpr, key)], 'False Positive Rate', 'True Positive Rate', 'ROC curve',
-                    os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/ROC_curve {}.png'.format(key)),
+                    os.path.join(f"{MEDIA_ROOT}", 'App/images/ROC_curve {}.png'.format(key)),
                     diag=True)
     arr = []
     for key, value in estimators_prob.items():
         fpr, tpr, thr = roc_curve(y_true, value)
         arr.append((fpr, tpr, key))
     create_plot(arr, 'False Positive Rate', 'True Positive Rate', 'ROC curve',
-                os.path.join(os.path.dirname(__file__), '..', '..',
+                os.path.join(f"{MEDIA_ROOT}",
                              'App/images/ROC_curve.png'),
                 diag=True)
 
     for key, value in estimators_prob.items():
         precision, recall, thr = precision_recall_curve(y_true, value)
         create_plot([(recall, precision, key)], 'Recall', 'Precision', 'PR curve',
-                    os.path.join(os.path.dirname(__file__), '..', '..',
+                    os.path.join(f"{MEDIA_ROOT}",
                                  'App/images/PR_curve {}.png'.format(key)))
 
     arr = []
@@ -140,7 +141,7 @@ def get_all_images(estimators_prob, y_true):
         precision, recall, thr = precision_recall_curve(y_true, value)
         arr.append((recall, precision, key))
     create_plot(arr, 'Recall', 'Precision', 'PR curve',
-                os.path.join(os.path.dirname(__file__), '..', '..',
+                os.path.join(f"{MEDIA_ROOT}",
                              'App/images/PR_curve.png'))
 
     for key, value in estimators_prob.items():
@@ -168,6 +169,6 @@ def get_all_images(estimators_prob, y_true):
                                                      title='Precision & Recall by percentile',
                                                      fontsize=14)
     fig = ax.get_figure()
-    fig.savefig(os.path.join(os.path.dirname(__file__), '..', '..',
+    fig.savefig(os.path.join(f"{MEDIA_ROOT}",
                              'App/images/PR_by_prc.png'),
                 dpi=200)

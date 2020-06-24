@@ -14,10 +14,11 @@ from .forms import FeatureSelectionMethodVarianceThreshold, FeatureSelectionMeth
     FeatureSelectionMethodSelectFromModel
 from .forms import CompositionMethodVoting, CompositionMethodAdaboost, CompositionMethodStacking
 from .forms import NeuralNetwork, DecisionTree, LogisticRegression
-from .forms import UploadFileForm
+from .forms import UploadFileForm, UploadModelFileForm
 from Web_classification_constructor_backend.settings import MEDIA_ROOT
 from packages.check_df import check_df
 from Classification_constructor_code.code.main import main_function
+from Classification_constructor_code.code.main_upload_mode import main_function_upload_mode
 from urllib.parse import urlencode
 import json
 import os
@@ -32,12 +33,14 @@ from zipfile import ZipFile
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_main_page(request):
     if "button exit" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/logout")
     elif "button create model" in request.POST.keys():
         return redirect("/1")
+    elif "button upload model" in request.POST.keys():
+        return redirect("/upload_model_mode")
     else:
         return render(request, "main_page.html")
-
 
 
 @csrf_exempt
@@ -64,6 +67,7 @@ def post_form_1(request):
 @require_http_methods(["GET", "POST"])
 def button_click_tracking(request):
     if "button exit" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/logout")
     if "button send" in request.POST.keys():
         response = post_form_1(request)
@@ -75,6 +79,7 @@ def button_click_tracking(request):
             return redirect(f'/2/?{url_get_data}')
         return render(request, "form_1.html", response)
     elif "button to main page" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/")
     else:
         form_1 = Form1(request.POST)
@@ -255,6 +260,7 @@ def button_click_tracking_2(request):
     # print(common_params)
 
     if "button exit" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/logout")
     if "button send 2" in request.POST.keys():
         response = post_form_2(request, common_params)
@@ -263,6 +269,7 @@ def button_click_tracking_2(request):
         return redirect(f'/3')
         # return render(request, "form_2.html", response)
     elif "button to main page" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/")
     else:
         response = post_form_2(request, common_params)
@@ -270,7 +277,7 @@ def button_click_tracking_2(request):
 
 
 def handle_uploaded_file(file, filename):
-    path = os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', filename)
+    path = os.path.join(f"{MEDIA_ROOT}", 'Input', filename)
 
     with open(path, 'wb+') as destination:
         for chunk in file.chunks():
@@ -278,27 +285,28 @@ def handle_uploaded_file(file, filename):
 
 
 def create_archive():
-    current = os.path.dirname(__file__)
-    z = ZipFile(os.path.join(current, '..', 'user_files', 'results.zip'), 'w')
-    path = os.path.join(current, '..', 'Classification_constructor_code', 'App', 'images')
+    z = ZipFile(os.path.join(f"{MEDIA_ROOT}", 'results.zip'), 'w')
+    path = os.path.join(f"{MEDIA_ROOT}", 'App', 'images')
     for image in os.listdir(path):
-        z.write(os.path.join(path, image), arcname=f'Images/{image}')
-        os.remove(os.path.join(path, image))
-    path = os.path.join(current, '..', 'Classification_constructor_code', 'App', 'models')
+        if image != 'none.txt':
+            z.write(os.path.join(path, image), arcname=f'Images/{image}')
+    path = os.path.join(f"{MEDIA_ROOT}",'App', 'models')
     for model in os.listdir(path):
-        z.write(os.path.join(path, model), arcname=f'Models/{model}')
-        os.remove(os.path.join(path, model))
-    path = os.path.join(current, '..', 'Classification_constructor_code', 'Output')
+        if model != 'none.txt':
+            z.write(os.path.join(path, model), arcname=f'Models/{model}')
+    path = os.path.join(f"{MEDIA_ROOT}", 'Output')
     for file in os.listdir(path):
-        z.write(os.path.join(path, file), arcname=f'Files/{file}')
-        os.remove(os.path.join(path, file))
+        if file != 'none.txt':
+            z.write(os.path.join(path, file), arcname=f'Files/{file}')
     z.close()
 
 
-def remove_tmp():
-    os.remove(os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', 'train.csv'))
-    os.remove(os.path.join(os.path.dirname(__file__), '..', 'Classification_constructor_code', 'Input', 'test.csv'))
-    os.remove(os.path.join(os.path.dirname(__file__), '..', 'user_files', 'user_all_params.json'))
+def remove_all_tmp():
+    tree = os.walk(f"{MEDIA_ROOT}")
+    for i in tree:
+        for file in i[2]:
+            if file != 'none.txt':
+                os.remove(os.path.join(i[0], file))
 
 
 @csrf_exempt
@@ -306,6 +314,7 @@ def remove_tmp():
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_3(request):
     if "button exit" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/logout")
     if "button send 3" in request.POST.keys():
         if 'file_train' in request.FILES and 'file_test' in request.FILES:
@@ -328,6 +337,7 @@ def button_click_tracking_3(request):
     elif "button send 4" in request.POST.keys():
         return redirect(f'/4')
     elif "button to main page" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/")
     else:
         upload_file_form = UploadFileForm()
@@ -337,20 +347,69 @@ def button_click_tracking_3(request):
 @csrf_exempt
 # @login_required
 @require_http_methods(["GET", "POST"])
+def button_click_tracking_3_upload_mode(request):
+    if "button exit" in request.POST.keys():
+        remove_all_tmp()
+        return redirect("/logout")
+    if "button send upload model mode" in request.POST.keys():
+        if 'trained_model' in request.FILES and 'file_test' in request.FILES:
+            upload_model_and_file_form = UploadModelFileForm(request.POST, request.FILES)
+            if upload_model_and_file_form.is_valid():  # проверка на валидность
+                handle_uploaded_file(request.FILES['trained_model'], 'model.pickle')
+                handle_uploaded_file(request.FILES['file_test'], 'test.csv')
+                response = {"data": "Модель и файл-тест загружены", "begin_work": True}
+                response["upload_model_and_file_form"] = upload_model_and_file_form
+                return render(request, "form_3_upload_mode.html", response)
+        else:
+            return render(request, "form_3_upload_mode.html", {'upload_model_and_file_form': UploadModelFileForm()})
+    elif "button send 4 upload mode" in request.POST.keys():
+        return redirect(f'/4_upload_mode')
+    elif "button to main page" in request.POST.keys():
+        remove_all_tmp()
+        return redirect("/")
+    else:
+        upload_model_and_file_form = UploadModelFileForm()
+    return render(request, 'form_3_upload_mode.html', {'upload_model_and_file_form': upload_model_and_file_form})
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
 def button_click_tracking_4(request):
     if "button exit" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/logout")
     if "button send 5" in request.POST.keys():
         start_process()
     if "get file" in request.POST.keys():
         path_to_results_file = f"{MEDIA_ROOT}/results.zip"
         file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
-        os.remove(path_to_results_file)
-        os.remove(f"{MEDIA_ROOT}/stages.json")
         return file_response
     if "button to main page" in request.POST.keys():
+        remove_all_tmp()
         return redirect("/")
     return render(request, 'form_4.html')
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def button_click_tracking_4_upload_mode(request):
+    if "button exit" in request.POST.keys():
+        remove_all_tmp()
+        return redirect("/logout")
+    if "button send 5 upload mode" in request.POST.keys():
+        main_function_upload_mode()
+        return render(request, 'form_4_upload_form.html', {'get_file_upload_mode': True})
+    if "get file upload mode" in request.POST.keys():
+        path_to_results_file = os.path.join(f"{MEDIA_ROOT}",
+                                            'Output/fin_test_upload_mode.csv')
+        file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
+        return file_response
+    if "button to main page" in request.POST.keys():
+        remove_all_tmp()
+        return redirect("/")
+    return render(request, 'form_4_upload_form.html')
 
 
 def start_process():
@@ -369,7 +428,6 @@ def start_process():
     }
     with open(f"{MEDIA_ROOT}/stages.json", 'w') as stages_json:
         json.dump(stages_dict, stages_json, ensure_ascii=False)
-    remove_tmp()
 
 
 @csrf_exempt
@@ -381,3 +439,10 @@ def show_process(request):
             stages_dict = json.load(stages_json)
             return JsonResponse(stages_dict)
     return JsonResponse()
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def info_page(request):
+    return render(request, 'info_page.html')

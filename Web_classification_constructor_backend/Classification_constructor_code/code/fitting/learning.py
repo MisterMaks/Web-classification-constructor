@@ -2,9 +2,10 @@ import importlib
 import re
 import os
 import json
+from Web_classification_constructor_backend.settings import MEDIA_ROOT
 
 
-# with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+# with open(os.path.join(f"{MEDIA_ROOT}", 'user_all_params.json')) as json_file:
 #     all_params = json.load(json_file)
 
 def load_class(full_name):
@@ -39,13 +40,11 @@ class Learning:
     """
     def __init__(self):
         base_algorithms = []
-        with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
-                               'user_all_params.json')) as json_file:
+        with open(os.path.join(f"{MEDIA_ROOT}", 'user_all_params.json')) as json_file:
             all_params = json.load(json_file)
         for el in all_params['base algorithms']:
             cls_name = base_estimators[re.match('(?P<name>\D+) #\d', el).group('name')]
             if el.startswith('logistic') and all_params['base algorithms'][el]['penalty']=='elasticnet':
-                print('ohohohohohohohoohhoohohohohohoho')
                 tmp_estim = load_class(cls_name)(**all_params['base algorithms'][el], l1_ratio=0.5)
             else:
                 tmp_estim = load_class(cls_name)(**all_params['base algorithms'][el])

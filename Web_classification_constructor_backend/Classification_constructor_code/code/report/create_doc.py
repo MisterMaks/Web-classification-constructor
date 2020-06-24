@@ -7,9 +7,10 @@ import re
 import os
 import json
 from datetime import datetime
+from Web_classification_constructor_backend.settings import MEDIA_ROOT
 
 
-# with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files', 'user_all_params.json')) as json_file:
+# with open(os.path.join(f"{MEDIA_ROOT}", 'user_all_params.json')) as json_file:
 #     all_params = json.load(json_file)
 
 
@@ -66,7 +67,7 @@ def get_confusion_matrix(estimators_pred, y_true):
                   'True = 0', fp, tn, fp + tn,
                   'Sum', tp + fp, fn + tn, tp + fp + fn + tn]
 
-        with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+        with open(os.path.join(f"{MEDIA_ROOT}",
                                'user_all_params.json')) as json_file:
             all_params = json.load(json_file)
 
@@ -92,7 +93,7 @@ def get_clssif_report(estimators_pred, y_true):
         s = re.sub('weighted avg', 'weighted_avg', s)
         s = re.sub('\n', ' ', s)
         report = [''] + [x for x in s.split(' ') if x != ''][:15] + ['', ''] + [x for x in s.split(' ') if x != ''][15:]
-        with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+        with open(os.path.join(f"{MEDIA_ROOT}",
                                'user_all_params.json')) as json_file:
             all_params = json.load(json_file)
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
@@ -135,7 +136,7 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     #     model_type = 'По умолчанию'
     # else:
     #     model_type = 'Собственная'
-    with open(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'user_files',
+    with open(os.path.join(f"{MEDIA_ROOT}",
                            'user_all_params.json')) as json_file:
         all_params = json.load(json_file)
 
@@ -172,21 +173,21 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
 
         if all_params['common params']['composition method'] in ['voting', 'stacking']:
             add_graph(doc=doc,
-                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                      img_path=os.path.join(f"{MEDIA_ROOT}",
                                             'App/images/ROC_curve {}.png'.format(key)),
                       imp_text=f'Рис.{img} Roc-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('PR-кривая', style='List Bullet 2')
             add_graph(doc=doc,
-                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                      img_path=os.path.join(f"{MEDIA_ROOT}",
                                             'App/images/PR_curve {}.png'.format(key)),
                       imp_text=f'Рис.{img} PR-кривая для модели {key}', width=width, height=height)
             img += 1
             doc.add_paragraph()
             doc.add_paragraph('Distribution graph', style='List Bullet 2')
             add_graph(doc=doc,
-                      img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+                      img_path=os.path.join(f"{MEDIA_ROOT}",
                                             'App/images/Distribution_graph {}.png'.format(key)),
                       imp_text=f'Рис.{img} Гистограмма распределения предсказаний модели {key}', width=width,
                       height=height)
@@ -207,24 +208,24 @@ def get_doc(pickle_path, train_path, feats_descr, pred_test, estimators_pred, y_
     create_heading(doc, text='Визуализация результатов', level=2, alignment=0)
 
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/ROC_curve.png'),
+              img_path=os.path.join(f"{MEDIA_ROOT}", 'App/images/ROC_curve.png'),
               imp_text=f'Рис.{img} Roc-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/PR_curve.png'),
+              img_path=os.path.join(f"{MEDIA_ROOT}", 'App/images/PR_curve.png'),
               imp_text=f'Рис.{img} PR-кривая', width=width, height=height)
     img += 1
     add_graph(doc=doc,
-              img_path=os.path.join(os.path.dirname(__file__), '..', '..', 'App/images/PR_by_prc.png'),
+              img_path=os.path.join(f"{MEDIA_ROOT}", 'App/images/PR_by_prc.png'),
               imp_text=f'Рис.{img} График precision и recall по перцентилям', width=width, height=height)
     img += 1
-    add_graph(doc=doc, img_path=os.path.join(os.path.dirname(__file__), '..', '..',
+    add_graph(doc=doc, img_path=os.path.join(f"{MEDIA_ROOT}",
                                              'App/images/Distribution_graph final_model.png'),
               imp_text=f'Рис.{img} Гистограмма распределения предсказаний итоговой модели', width=width, height=height)
 
     test_ex = np.vstack((pred_test.columns, pred_test.head(10).values))
     table_to_doc(doc=doc, header='Предсказание на тестовой выборке', nrows=11, ncols=3, matrix=test_ex)
 
-    path_to_final_word = os.path.join(os.path.dirname(__file__), '..', '..',
+    path_to_final_word = os.path.join(f"{MEDIA_ROOT}",
                                       'Output/fin.docx')
     doc.save(path_to_final_word)
