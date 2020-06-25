@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
     <div>
-        <div>
+        <div id="form">
             <form method="POST" enctype="multipart/form-data">
                 {{ upload_model_and_file_form.as_p }}
+                <div id="buttons_in_row">
                 <button type="submit" name="button send upload model mode">Upload</button>
                 <button {% if not begin_work %} disabled {% endif %} type="submit" name="button send 4 upload mode">Далее</button>
                 <button type="submit" name="button to main page">В начало</button>
-                <button type="submit" name="button exit">Выйти</button>
+<!--                <button type="submit" name="button exit">Выйти</button>-->
+                </div>
             </form>
         </div>
         <div>

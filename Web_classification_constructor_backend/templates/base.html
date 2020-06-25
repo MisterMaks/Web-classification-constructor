@@ -1,12 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Web classification constructor</title>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
 </head>
 <body>
-    {% block content %}
-    {% endblock %}
+    <div id="all">
+        <div id="header">
+            <div id="mephi">
+                <img id="mephi_image" src="https://auth.mephi.ru/assets/logo-9a877a16015f71338f4989de7ec818cde41e13e2520d471c992c6001195c91ee.png">
+                <div id="mephi_name">НИЯУ МИФИ</div>
+            </div>
+            <div id="web_classification_constructor">WEB CLASSIFICATION CONSTRUCTOR</div>
+            <div id="right_elements">
+                <div id="info">
+                    <a href="/info">INFO</a>
+                </div>
+                <div id="authors"></div>
+                <div id="exit">
+                    <a href="/logout">EXIT</a>
+                </div>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
     {% block script %}
     {% endblock %}

@@ -1,0 +1,140 @@
+html,
+body {
+    margin: 0px;
+}
+
+#all {
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #42A5F5;
+}
+
+#mephi {
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+}
+
+#mephi_image {
+    width: 50px;
+    height: 50px;
+}
+
+button {
+    background: #42A5F5;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    border: 0px;
+    padding: 5px;
+}
+
+button:hover {
+    background: #424242;
+}
+
+#form {
+    display: flex;
+    justify-content: center;
+    /*flex-direction: column;*/
+    /*border: 3px solid;*/
+    /*border-radius: 3px;*/
+    /*padding: 10px;*/
+    /*margin-top: 10px;*/
+
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border: 3px solid;
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#incorrect_message {
+    margin-bottom: 10px;
+}
+
+#password, #username {
+    display: flex;
+    flex-direction: column;
+}
+
+label[for="id_username"],
+label[for="id_password"],
+label[for='id_file_train'],
+label[for="id_trained_model"] {
+    display: flex;
+    justify-content: center;
+}
+
+label[for='id_file_test'] {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+button[name="login"],
+button {
+    margin-top: 10px;
+}
+
+button[name="button create model"] {
+    margin-top: 0px;
+}
+
+#buttons_in_row {
+    display: flex;
+    justify-content: center;
+}
+
+button[name="button to main page"],
+button[name="button send 4"],
+button[name="get file"],
+button[name="button send 4 upload mode"],
+#get_file{
+    margin-left: 10px;
+}
+
+#mephi_image_place,
+#mephi_name,
+#web_classification_constructor,
+#info,
+#authors,
+#exit {
+    align-self: center;
+    color: white;
+}
+
+p {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#id_file_train, #id_file_test, #id_trained_model {
+    align-self: center;
+    margin-top: 5px;
+    width: 225px;
+}
+
+#right_elements {
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+#exit {
+    margin-left: 10px;
+}
+

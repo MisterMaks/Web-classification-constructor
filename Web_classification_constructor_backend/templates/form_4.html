@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div>
-        <div id="stages_process"></div>
+    <div id="form">
+<!--        <div id="stages_process"></div>-->
         <form method="POST">
-            <button type="submit" name="button send 5" id="begin_work">Begin work</button>
-            <button disabled type="submit" name="get file" id="get_file">Скачать отчет</button>
-            <button type="submit" name="button to main page">В начало</button>
-            <button type="submit" name="button exit">Выйти</button>
+            <div id="stages_process"></div>
+            <div id="buttons_in_row">
+                <button type="submit" name="button send 5" id="begin_work">Begin work</button>
+                <button disabled type="submit" name="get file" id="get_file">Скачать отчет</button>
+                <button type="submit" name="button to main page">В начало</button>
+<!--                <button type="submit" name="button exit">Выйти</button>-->
+            </div>
+            <div id="error_message">{{error}}</div>
         </form>
     </div>
 {% endblock %}
@@ -15,6 +19,7 @@
     <script>
         let process = '';
         let finish = false;
+        let error_message = $('#error_message');
         let timerId = setInterval(() =>
             $.ajax({
                 type: "GET",
@@ -25,7 +30,7 @@
                         if (data[key] === "Обрабатывается" || data[key] === "Завершено") {
                             process += "<div>" + key + ' ' + data[key] + "</div>";
                         }
-                        if (key === "Finish") {
+                        if (key === "Finish" || error_message[0].textContent) {
                             finish = true;
                             clearInterval(timerId);
                             $("#get_file")[0].disabled = false;

@@ -28,7 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = ''
+LOGIN_REDIRECT_URL = 'button_click_tracking_main_page'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
 

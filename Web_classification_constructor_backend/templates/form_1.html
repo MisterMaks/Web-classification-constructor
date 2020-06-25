@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
     <div>
-        <div>
+        <div id="form">
             <form method="POST">
                 {{ form_1.as_p }}
-                <button type="submit" name="button send">Отправить</button>
-                <button type="submit" name="button to main page">В начало</button>
-                <button type="submit" name="button exit">Выйти</button>
+                <div id="buttons_in_row">
+                    <button type="submit" name="button send">Отправить</button>
+                    <button type="submit" name="button to main page">В начало</button>
+<!--                    <button type="submit" name="button exit">Выйти</button>-->
+                </div>
             </form>
-        </div>
-        <div>
-            <div>{{ data }}</div>
         </div>
     </div>
 {% endblock %}

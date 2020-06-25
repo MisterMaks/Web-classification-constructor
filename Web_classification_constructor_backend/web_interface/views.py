@@ -1,3 +1,4 @@
+import matplotlib
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.views.decorators.http import require_http_methods
@@ -25,11 +26,14 @@ import os
 from zipfile import ZipFile
 
 
+matplotlib.use('Agg')
+
+
 # Create your views here.
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_main_page(request):
     if "button exit" in request.POST.keys():
@@ -63,7 +67,7 @@ def post_form_1(request):
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking(request):
     if "button exit" in request.POST.keys():
@@ -239,7 +243,7 @@ def post_form_2(request, common_params):
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_2(request):
     data = dict(request.GET)
@@ -310,7 +314,7 @@ def remove_all_tmp():
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_3(request):
     if "button exit" in request.POST.keys():
@@ -345,7 +349,7 @@ def button_click_tracking_3(request):
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_3_upload_mode(request):
     if "button exit" in request.POST.keys():
@@ -373,14 +377,17 @@ def button_click_tracking_3_upload_mode(request):
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_4(request):
     if "button exit" in request.POST.keys():
         remove_all_tmp()
         return redirect("/logout")
     if "button send 5" in request.POST.keys():
-        start_process()
+        try:
+            start_process()
+        except Exception as e:
+            return render(request, 'form_4.html', {"error": e})
     if "get file" in request.POST.keys():
         path_to_results_file = f"{MEDIA_ROOT}/results.zip"
         file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
@@ -392,15 +399,18 @@ def button_click_tracking_4(request):
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_4_upload_mode(request):
     if "button exit" in request.POST.keys():
         remove_all_tmp()
         return redirect("/logout")
     if "button send 5 upload mode" in request.POST.keys():
-        main_function_upload_mode()
-        return render(request, 'form_4_upload_form.html', {'get_file_upload_mode': True})
+        try:
+            main_function_upload_mode()
+            return render(request, 'form_4_upload_form.html', {'get_file_upload_mode': True})
+        except Exception as e:
+            return render(request, 'form_4_upload_form.html', {'error': e})
     if "get file upload mode" in request.POST.keys():
         path_to_results_file = os.path.join(f"{MEDIA_ROOT}",
                                             'Output/fin_test_upload_mode.csv')
@@ -431,7 +441,7 @@ def start_process():
 
 
 @csrf_exempt
-# @login_required
+@login_required
 @require_http_methods(["GET", "POST"])
 def show_process(request):
     if "stages.json" in os.listdir(MEDIA_ROOT):
