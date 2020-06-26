@@ -3,7 +3,9 @@
     <div id="form">
 <!--        <div id="stages_process"></div>-->
         <form method="POST">
-            <div id="stages_process"></div>
+            <div id="stages_process_place">
+                <div id="stages_process"></div>
+            </div>
             <div id="buttons_in_row">
                 <button type="submit" name="button send 5" id="begin_work">Begin work</button>
                 <button disabled type="submit" name="get file" id="get_file">Скачать отчет</button>
@@ -31,10 +33,18 @@
                             process += "<div>" + key + ' ' + data[key] + "</div>";
                         }
                         if (key === "Finish" || error_message[0].textContent) {
+                            localStorage.setItem('finish', '1');
                             finish = true;
-                            clearInterval(timerId);
                             $("#get_file")[0].disabled = false;
                             $("#begin_work")[0].disabled = true;
+                            clearInterval(timerId);
+                        }
+                        if (localStorage['finish'] === '1') {
+                            localStorage.clear();
+                            finish = true;
+                            $("#get_file")[0].disabled = false;
+                            $("#begin_work")[0].disabled = true;
+                            clearInterval(timerId);
                         }
                     }
                     $('#stages_process')[0].innerHTML = process;

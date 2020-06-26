@@ -1,18 +1,17 @@
 import matplotlib
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import Http404
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .forms import Form1
 from .forms import FillingGapsMethodInsertMeanMode, FillingGapsMethodHardRemoval, FillingGapsMethodLinearImputer
 from .forms import DeletingAnomaliesMethodThreeSigma, DeletingAnomaliesMethodGrubbs, \
-    DeletingAnomaliesMethodInterquartile, DeletingAnomaliesMethodIsolationForest, DeletingAnomaliesMethodElliptic, \
-    DeletingAnomaliesMethodSVM, DeletingAnomaliesMethodApproximate, DeletingAnomaliesMethodLocalFactor
+    DeletingAnomaliesMethodIsolationForest, DeletingAnomaliesMethodElliptic, DeletingAnomaliesMethodSVM
 from .forms import FeatureSelectionMethodVarianceThreshold, FeatureSelectionMethodSelectKBest, \
     FeatureSelectionMethodSelectPercentile, FeatureSelectionMethodSelectFpr, FeatureSelectionMethodSelectFdr, \
-    FeatureSelectionMethodSelectFwe, FeatureSelectionMethodGenericUnivariateSelect, FeatureSelectionMethodRFE, \
-    FeatureSelectionMethodSelectFromModel
+    FeatureSelectionMethodSelectFwe, FeatureSelectionMethodRFE
 from .forms import CompositionMethodVoting, CompositionMethodAdaboost, CompositionMethodStacking
 from .forms import NeuralNetwork, DecisionTree, LogisticRegression
 from .forms import UploadFileForm, UploadModelFileForm
@@ -36,6 +35,7 @@ matplotlib.use('Agg')
 @login_required
 @require_http_methods(["GET", "POST"])
 def button_click_tracking_main_page(request):
+    remove_all_tmp()
     if "button exit" in request.POST.keys():
         remove_all_tmp()
         return redirect("/logout")
@@ -56,6 +56,17 @@ def post_form_1(request):
     if form_1.is_valid():
         for field in form_1.cleaned_data.keys():
             data[field.replace('_', ' ') if field != 'test_ratio' else field] = form_1.cleaned_data[field]
+            if field not in ['neural_network_number', 'decision_tree_number', 'logistic_regression_number']:
+                if form_1.cleaned_data[field] is None:
+                    response = {"form_1": form_1,
+                                "data": {},
+                                "error": "Заполните все поля"}
+                    return response
+        if data["neural network number"] == data["decision tree number"] == data["logistic regression number"] == 0:
+            response = {"form_1": form_1,
+                        "data": {},
+                        "error": "Должен быть хотя бы 1 из базовых алгоритмов"}
+            return response
         response = {"form_1": form_1,
                     "data": data}
         print(response["data"])
@@ -114,9 +125,6 @@ def post_form_2(request, common_params):
         deleting_anomalies_method = DeletingAnomaliesMethodThreeSigma(request.POST, prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'Grubbs':
         deleting_anomalies_method = DeletingAnomaliesMethodGrubbs(request.POST, prefix="deleting_anomalies_method")
-    if common_params['deleting anomalies method'] == 'Interquartile':
-        deleting_anomalies_method = DeletingAnomaliesMethodInterquartile(request.POST,
-                                                                         prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'IsolationForest':
         deleting_anomalies_method = DeletingAnomaliesMethodIsolationForest(request.POST,
                                                                            prefix="deleting_anomalies_method")
@@ -124,10 +132,6 @@ def post_form_2(request, common_params):
         deleting_anomalies_method = DeletingAnomaliesMethodElliptic(request.POST, prefix="deleting_anomalies_method")
     if common_params['deleting anomalies method'] == 'SVM':
         deleting_anomalies_method = DeletingAnomaliesMethodSVM(request.POST, prefix="deleting_anomalies_method")
-    if common_params['deleting anomalies method'] == 'Approximate':
-        deleting_anomalies_method = DeletingAnomaliesMethodApproximate(request.POST, prefix="deleting_anomalies_method")
-    if common_params['deleting anomalies method'] == 'LocalFactor':
-        deleting_anomalies_method = DeletingAnomaliesMethodLocalFactor(request.POST, prefix="deleting_anomalies_method")
 
     # feature_selection_method = FeatureSelectionMethodVarianceThreshold(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'VarianceThreshold':
@@ -144,14 +148,8 @@ def post_form_2(request, common_params):
         feature_selection_method = FeatureSelectionMethodSelectFdr(request.POST, prefix="feature_selection_method")
     if common_params['feature selection method'] == 'SelectFwe':
         feature_selection_method = FeatureSelectionMethodSelectFwe(request.POST, prefix="feature_selection_method")
-    if common_params['feature selection method'] == 'GenericUnivariateSelect':
-        feature_selection_method = FeatureSelectionMethodGenericUnivariateSelect(request.POST,
-                                                                                 prefix="feature_selection_method")
     if common_params['feature selection method'] == 'RFE':
         feature_selection_method = FeatureSelectionMethodRFE(request.POST, prefix="feature_selection_method")
-    if common_params['feature selection method'] == 'SelectFromModel':
-        feature_selection_method = FeatureSelectionMethodSelectFromModel(request.POST,
-                                                                         prefix="feature_selection_method")
 
     # composition_method = CompositionMethodVoting(request.POST, prefix="composition_method")
     if common_params['composition method'] == 'voting':
@@ -179,12 +177,16 @@ def post_form_2(request, common_params):
         # "name of model with time of create": name_of_model_with_time_of_create
     }
 
+    error_mark = False
+
     if deleting_anomalies_method.is_valid():
         if common_params["deleting anomalies method"] not in ["ThreeSigma"]:
             all_params["deleting anomalies method"] = {common_params["deleting anomalies method"]: {}}
             for field in deleting_anomalies_method.cleaned_data.keys():
                 all_params["deleting anomalies method"][common_params["deleting anomalies method"]][field] = \
                     deleting_anomalies_method.cleaned_data[field]
+                if deleting_anomalies_method.cleaned_data[field] is None:
+                    error_mark = True
         else:
             deleting_anomalies_method = None
             all_params["deleting anomalies method"] = common_params["deleting anomalies method"]
@@ -194,6 +196,8 @@ def post_form_2(request, common_params):
         for field in feature_selection_method.cleaned_data.keys():
             all_params["feature selection method"][common_params["feature selection method"]][field] = \
                 feature_selection_method.cleaned_data[field]
+            if feature_selection_method.cleaned_data[field] is None:
+                error_mark = True
 
     all_params["base algorithms"] = {}
     for key in base_algorithms:
@@ -201,6 +205,8 @@ def post_form_2(request, common_params):
             all_params["base algorithms"][key] = {}
             for field in base_algorithms[key].cleaned_data.keys():
                 all_params["base algorithms"][key][field] = base_algorithms[key].cleaned_data[field]
+                if base_algorithms[key].cleaned_data[field] is None:
+                    error_mark = True
 
     # all_params["name of model"] = common_params["name of model"]
 
@@ -210,6 +216,8 @@ def post_form_2(request, common_params):
             for field in filling_gaps_method.cleaned_data.keys():
                 all_params["filling gaps method"][common_params["filling gaps method"]][field] = \
                     filling_gaps_method.cleaned_data[field]
+                if filling_gaps_method.cleaned_data[field] is None:
+                    error_mark = True
         else:
             filling_gaps_method = None
             all_params["filling gaps method"] = common_params["filling gaps method"]
@@ -220,6 +228,8 @@ def post_form_2(request, common_params):
             for field in composition_method.cleaned_data.keys():
                 all_params["composition method"][common_params["composition method"]][field] = \
                     composition_method.cleaned_data[field]
+                if composition_method.cleaned_data[field] is None:
+                    error_mark = True
         else:
             composition_method = None
             all_params["composition method"] = common_params["composition method"]
@@ -238,6 +248,9 @@ def post_form_2(request, common_params):
         "data": all_params,
         "logistic_regression_number": common_params['logistic regression number']
     }
+
+    if error_mark:
+        response["error"] = "Заполните все поля"
 
     return response
 
@@ -268,6 +281,8 @@ def button_click_tracking_2(request):
         return redirect("/logout")
     if "button send 2" in request.POST.keys():
         response = post_form_2(request, common_params)
+        if "error" in response:
+            return render(request, "form_2.html", response)
         with open(f"{MEDIA_ROOT}/user_all_params.json", 'w') as all_params_file:
             json.dump(response["data"], all_params_file)
         return redirect(f'/3')
@@ -277,6 +292,7 @@ def button_click_tracking_2(request):
         return redirect("/")
     else:
         response = post_form_2(request, common_params)
+        response.pop("error")
         return render(request, "form_2.html", response)
 
 
@@ -387,7 +403,7 @@ def button_click_tracking_4(request):
         try:
             start_process()
         except Exception as e:
-            return render(request, 'form_4.html', {"error": e})
+            return render(request, 'form_4.html', {"error": f"ERROR: {e}"})
     if "get file" in request.POST.keys():
         path_to_results_file = f"{MEDIA_ROOT}/results.zip"
         file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
@@ -410,7 +426,7 @@ def button_click_tracking_4_upload_mode(request):
             main_function_upload_mode()
             return render(request, 'form_4_upload_form.html', {'get_file_upload_mode': True})
         except Exception as e:
-            return render(request, 'form_4_upload_form.html', {'error': e})
+            return render(request, 'form_4_upload_form.html', {'error': f"ERROR: {e}"})
     if "get file upload mode" in request.POST.keys():
         path_to_results_file = os.path.join(f"{MEDIA_ROOT}",
                                             'Output/fin_test_upload_mode.csv')
@@ -448,7 +464,7 @@ def show_process(request):
         with open(f"{MEDIA_ROOT}/stages.json") as stages_json:
             stages_dict = json.load(stages_json)
             return JsonResponse(stages_dict)
-    return JsonResponse()
+    raise Http404
 
 
 @csrf_exempt
@@ -456,3 +472,10 @@ def show_process(request):
 @require_http_methods(["GET", "POST"])
 def info_page(request):
     return render(request, 'info_page.html')
+
+
+@csrf_exempt
+# @login_required
+@require_http_methods(["GET", "POST"])
+def authors(request):
+    return render(request, 'authors.html')
