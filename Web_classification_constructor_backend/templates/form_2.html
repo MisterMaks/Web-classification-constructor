@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <div id="form">
+            <form method="POST">
+                <div>
+                    {% if filling_gaps_method %}
+                        <div>filling_gaps_method</div>
+                        <div>{{filling_gaps_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if deleting_anomalies_method %}
+                        <div>deleting_anomalies_method</div>
+                        <div>{{deleting_anomalies_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div>feature_selection_method</div>
+                    <div>{{feature_selection_method.as_p}}</div>
+                </div>
+                <div>
+                    {% if composition_method %}
+                        <div>composition_method</div>
+                        <div>{{composition_method.as_p}}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% for algorithm, algorithm_form in base_algorithms.items %}
+                        <div>
+                            <div>{{algorithm}}</div>
+                            <div>{{algorithm_form.as_p}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div id="buttons_in_row">
+                    <button type="submit" name="button send 2">Отправить</button>
+                    <button name="button to main page">
+                        <a href="/">В начало</a>
+                    </button>
+<!--                    <button type="submit" name="button exit">Выйти</button>-->
+                </div>
+                <div id="error_message">{{error}}</div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        for (let i = 1; i <= {{logistic_regression_number}}; i++) {
+            let solver = $('#id_logistic_regression_' + i + '-solver');
+            let penalty = $('#id_logistic_regression_' + i + '-penalty');
+            let params = {
+                'saga': ['l1', 'l2', 'elasticnet', 'none'],
+                'sag': ['l2', 'none'],
+                'newton-cg': ['l2', 'none'],
+                'lbfgs': ['l2', 'none'],
+                'liblinear': ['l1']
+            }
+            function setParams() {
+                while (penalty[0].options.length > 0) {
+                    penalty[0].remove(0);
+                }
+                params[solver[0].value].forEach(
+                    function (item, i, arr) {
+                        let option = new Option(item, item);
+                        penalty[0].append(option);
+                    }
+                )
+            }
+            setParams();
+            solver.change(setParams);
+        }
+    </script>
+{% endblock %}

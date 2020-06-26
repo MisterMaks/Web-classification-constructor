@@ -28,7 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = ''
+LOGIN_REDIRECT_URL = 'button_click_tracking_main_page'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
 
@@ -129,6 +129,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'tmp_user_files')
 
 try:
     from .local_settings import *

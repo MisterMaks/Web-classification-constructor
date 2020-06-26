@@ -20,6 +20,6 @@ from user_profile import views as user_profile_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('web_interface.urls')),
-    path('login/', user_profile_views.login, name='login'),
-    path('logout/', user_profile_views.logout, name='logout'),
+    path('login/', user_profile_views.login_user, name='login'),
+    path('logout/', user_profile_views.logout_user, name='logout'),
 ]

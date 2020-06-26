@@ -1,0 +1,257 @@
+html,
+body {
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    background: #8EFACF;
+    /*font-size: xx-large;*/
+    font-family: "PT Sans Bold";
+}
+
+#all {
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #42A5F5;
+}
+
+#mephi {
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+}
+
+#mephi_image {
+    width: 45px;
+    height: 45px;
+}
+
+button {
+    background: #42A5F5;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    border: 0px;
+    padding: 5px;
+}
+
+button:hover {
+    background: #424242;
+}
+
+button:disabled {
+    background: #96CCFA;
+    cursor: auto;
+}
+
+#form {
+    display: flex;
+    justify-content: center;
+    /*flex-direction: column;*/
+    /*border: 3px solid;*/
+    /*border-radius: 3px;*/
+    /*padding: 10px;*/
+    /*margin-top: 10px;*/
+
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    /*border: 3px solid ;*/
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 10px;
+    background: #FFE491;
+}
+
+input, select {
+    border-radius: 3px;
+    border: 0px solid;
+}
+
+#incorrect_message {
+    margin-bottom: 10px;
+}
+
+#password, #username {
+    display: flex;
+    flex-direction: column;
+}
+
+label[for="id_username"],
+label[for="id_password"],
+label[for='id_file_train'],
+label[for="id_trained_model"] {
+    display: flex;
+    justify-content: center;
+}
+
+label[for='id_file_test'] {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+button[name="login"],
+button {
+    margin-top: 10px;
+}
+
+button[name="button create model"] {
+    margin-top: 0px;
+}
+
+#buttons_in_row {
+    display: flex;
+    justify-content: center;
+}
+
+button[name="button to main page"],
+button[name="button send 4"],
+button[name="get file"],
+button[name="button send 4 upload mode"],
+#get_file{
+    margin-left: 10px;
+}
+
+#mephi_image_place,
+#mephi_name,
+#web_classification_constructor,
+#info,
+#authors,
+#source_code,
+#exit {
+    align-self: center;
+    color: white;
+}
+
+#mephi_image_place {
+    background: white;
+    border-radius: 50%;
+    height: 45px;
+    padding: 2px;
+    margin-right: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+p {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#id_file_train, #id_file_test, #id_trained_model {
+    align-self: center;
+    margin-top: 5px;
+    width: 225px;
+}
+
+#right_elements {
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+/*#exit {*/
+/*    margin-left: 10px;*/
+/*}*/
+
+ul {
+    color: red;
+    padding: 0px;
+    margin-bottom: 0px;
+}
+
+li {
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    padding: 5px;
+}
+
+a:hover {
+    background: #424242;
+    border-radius: 3px;
+}
+
+#stages_process_place {
+    background: white;
+    border-radius: 3px;
+}
+
+#stages_process {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+#error_message {
+    color: red;
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+#mephi_image_link {
+    cursor: pointer;
+    padding: 0px;
+}
+
+#mephi_image_link:hover {
+    background: none;
+}
+
+#info_page_place ul {
+    color: black;
+}
+
+#info_page_place {
+    background: white;
+}
+
+.info_header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#authors_place {
+    display: flex;
+    align-self: center;
+    flex-direction: row;
+    color: black;
+    background: #FFE491;
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#name, #email {
+    margin-right: 30px;
+}
+
+#authors_name, #authors_email, #authors_github {
+    display: flex;
+    flex-direction: column;
+}
+
+.Maxim-Makarov, .Alexey-Vasiliev {
+    margin-top: 10px;
+}
+
+.name, .email, .github {
+    align-self: center;
+    margin-bottom: 10px;
+}
+

@@ -1,15 +1,122 @@
 {% extends 'base.html' %}
 {% block content %}
     <div>
-        <div>
+        <div id="form">
             <form method="POST">
                 {{ form_1.as_p }}
-                <button type="submit" name="button send">Отправить</button>
-                <button type="submit" name="button exit">Выйти</button>
+                <div id="buttons_in_row">
+                    <button type="submit" name="button send">Отправить</button>
+                    <button name="button to main page">
+                        <a href="/">В начало</a>
+                    </button>
+<!--                    <button type="submit" name="button exit">Выйти</button>-->
+                </div>
+                <div id="error_message">{{error}}</div>
             </form>
         </div>
-        <div>
-            <div>{{ data }}</div>
-        </div>
     </div>
+{% endblock %}
+{% block script %}
+    <script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        // location.reload();
+
+        let neuralNetworkNumber = $('#id_neural_network_number');
+        let decisionTreeNumber = $('#id_decision_tree_number');
+        let logisticRegressionNumber = $('#id_logistic_regression_number');
+
+        neuralNetworkNumber[0].value = 0;
+        decisionTreeNumber[0].value = 0;
+        logisticRegressionNumber[0].value = 0;
+
+        let compositionMethod = $('#id_composition_method');
+
+        function checkParams() {
+            if (compositionMethod[0].value === 'adaboost') {
+                localStorage.setItem('compositionMethod', 'adaboost')
+                neuralNetworkNumber[0].type = 'radio';
+                decisionTreeNumber[0].type = 'radio';
+                logisticRegressionNumber[0].type = 'radio';
+
+                neuralNetworkNumber[0].checked = true;
+                neuralNetworkNumber[0].value = 1;
+
+                neuralNetworkNumber.change(function () {
+                    if (neuralNetworkNumber[0].checked) {
+                        neuralNetworkNumber[0].value = 1;
+
+                        decisionTreeNumber[0].checked = false;
+                        logisticRegressionNumber[0].checked = false;
+                    }
+                })
+
+                decisionTreeNumber.change(function () {
+                    if (decisionTreeNumber[0].checked) {
+                        decisionTreeNumber[0].value = 1;
+
+                        neuralNetworkNumber[0].checked = false;
+                        logisticRegressionNumber[0].checked = false;
+                    }
+                })
+
+                logisticRegressionNumber.change(function () {
+                    if (logisticRegressionNumber[0].checked) {
+                        logisticRegressionNumber[0].value = 1;
+
+                        neuralNetworkNumber[0].checked = false;
+                        decisionTreeNumber[0].checked = false;
+                    }
+                })
+            } else {
+                neuralNetworkNumber[0].type = '';
+                decisionTreeNumber[0].type = '';
+                logisticRegressionNumber[0].type = '';
+
+                neuralNetworkNumber[0].value = 0;
+                decisionTreeNumber[0].value = 0;
+                logisticRegressionNumber[0].value = 0;
+            }
+
+            if (localStorage['compositionMethod'] === 'adaboost') {
+                localStorage.clear()
+                neuralNetworkNumber[0].type = 'radio';
+                decisionTreeNumber[0].type = 'radio';
+                logisticRegressionNumber[0].type = 'radio';
+
+                neuralNetworkNumber[0].checked = true;
+                neuralNetworkNumber[0].value = 1;
+
+                neuralNetworkNumber.change(function () {
+                    if (neuralNetworkNumber[0].checked) {
+                        neuralNetworkNumber[0].value = 1;
+
+                        decisionTreeNumber[0].checked = false;
+                        logisticRegressionNumber[0].checked = false;
+                    }
+                })
+
+                decisionTreeNumber.change(function () {
+                    if (decisionTreeNumber[0].checked) {
+                        decisionTreeNumber[0].value = 1;
+
+                        neuralNetworkNumber[0].checked = false;
+                        logisticRegressionNumber[0].checked = false;
+                    }
+                })
+
+                logisticRegressionNumber.change(function () {
+                    if (logisticRegressionNumber[0].checked) {
+                        logisticRegressionNumber[0].value = 1;
+
+                        neuralNetworkNumber[0].checked = false;
+                        decisionTreeNumber[0].checked = false;
+                    }
+                })
+            }
+        }
+
+        checkParams();
+
+        compositionMethod.change(checkParams);
+    </script>
 {% endblock %}

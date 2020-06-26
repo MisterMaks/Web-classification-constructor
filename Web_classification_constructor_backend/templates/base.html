@@ -1,11 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Web classification constructor</title>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
 </head>
 <body>
-    {% block content %}
-    {% endblock %}
+    <div id="all">
+        <div id="header">
+            <div id="mephi">
+                <div id="mephi_image_place">
+                    <a href="https://mephi.ru/" id="mephi_image_link">
+                        <img id="mephi_image" src="https://www.werstakoff.ru/logo/mifi_logo.png">
+                    </a>
+                </div>
+                <div id="mephi_name">
+                    <a href="https://mephi.ru/">НИЯУ МИФИ</a>
+                </div>
+            </div>
+            <div id="web_classification_constructor">
+                <a href="/">WEB CLASSIFICATION CONSTRUCTOR</a>
+            </div>
+            <div id="right_elements">
+                <div id="info">
+                    <a href="/info">INFO</a>
+                </div>
+                <div id="authors">
+                    <a href="/authors">AUTHORS</a>
+                </div>
+                <div id="source_code">
+                    <a href="https://github.com/MisterMaks/Web-classification-constructor">GITHUB</a>
+                </div>
+                <div id="exit">
+                    <a href="/logout">EXIT</a>
+                </div>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
+    {% block script %}
+    {% endblock %}
 </html>
