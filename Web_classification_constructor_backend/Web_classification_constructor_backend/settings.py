@@ -25,7 +25,7 @@ SECRET_KEY = None
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'https://web-classification-constructor.herokuapp.com/']
+ALLOWED_HOSTS = ['127.0.0.1', 'https://web-classification-constructor.herokuapp.com']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'button_click_tracking_main_page'
