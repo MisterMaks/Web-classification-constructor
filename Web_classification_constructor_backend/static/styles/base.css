@@ -4,7 +4,6 @@ body {
     width: 100%;
     height: 100%;
     background: #8EFACF;
-    /*font-size: xx-large;*/
     font-family: "PT Sans Bold";
 }
 
@@ -52,19 +51,12 @@ button:disabled {
 #form {
     display: flex;
     justify-content: center;
-    /*flex-direction: column;*/
-    /*border: 3px solid;*/
-    /*border-radius: 3px;*/
-    /*padding: 10px;*/
-    /*margin-top: 10px;*/
-
 }
 
 form {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    /*border: 3px solid ;*/
     border-radius: 3px;
     padding: 10px;
     margin-top: 10px;
@@ -161,10 +153,6 @@ p {
     flex-direction: row;
 }
 
-/*#exit {*/
-/*    margin-left: 10px;*/
-/*}*/
-
 ul {
     color: red;
     padding: 0px;
@@ -254,4 +242,3 @@ a:hover {
     align-self: center;
     margin-bottom: 10px;
 }
-

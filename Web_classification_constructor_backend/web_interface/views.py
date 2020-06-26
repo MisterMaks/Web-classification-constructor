@@ -69,11 +69,11 @@ def post_form_1(request):
             return response
         response = {"form_1": form_1,
                     "data": data}
-        print(response["data"])
+        # print(response["data"])
         return response
     response = {"form_1": form_1,
                 "data": data}
-    print(response)
+    # print(response)
     return response
 
 
@@ -108,9 +108,6 @@ def button_click_tracking(request):
 @require_http_methods(["GET", "POST"])
 def post_form_2(request, common_params):
     # print(common_params)
-
-    # name_of_model_with_time_of_create = f"{common_params['name of model']}" \
-    #     f"({datetime.datetime.today().strftime('%Y-%m-%d-%H-%M-%S')})"
 
     # filling_gaps_method = FillingGapsMethodInsertMeanMode(request.POST, prefix="filling_gaps_method")
     if common_params['filling gaps method'] == 'InsertMeanMode':
@@ -173,9 +170,7 @@ def post_form_2(request, common_params):
             logistic_regression = LogisticRegression(request.POST, prefix=f'logistic_regression_{i + 1}')
             base_algorithms[f'logistic regression #{i + 1}'] = logistic_regression
 
-    all_params = {
-        # "name of model with time of create": name_of_model_with_time_of_create
-    }
+    all_params = {}
 
     error_mark = False
 
@@ -208,8 +203,6 @@ def post_form_2(request, common_params):
                 if base_algorithms[key].cleaned_data[field] is None:
                     error_mark = True
 
-    # all_params["name of model"] = common_params["name of model"]
-
     if filling_gaps_method.is_valid():
         if common_params["filling gaps method"] not in ["HardRemoval", "LinearImputer"]:
             all_params["filling gaps method"] = {common_params["filling gaps method"]: {}}
@@ -237,7 +230,7 @@ def post_form_2(request, common_params):
     all_params["test_ratio"] = common_params["test_ratio"]
     all_params["common params"] = common_params
 
-    print(all_params)
+    # print(all_params)
 
     response = {
         "filling_gaps_method": filling_gaps_method,
@@ -405,9 +398,12 @@ def button_click_tracking_4(request):
         except Exception as e:
             return render(request, 'form_4.html', {"error": f"ERROR: {e}"})
     if "get file" in request.POST.keys():
-        path_to_results_file = f"{MEDIA_ROOT}/results.zip"
-        file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
-        return file_response
+        try:
+            path_to_results_file = f"{MEDIA_ROOT}/results.zip"
+            file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
+            return file_response
+        except Exception as e:
+            return render(request, 'form_4.html', {"error": f"ERROR: {e}"})
     if "button to main page" in request.POST.keys():
         remove_all_tmp()
         return redirect("/")
@@ -428,10 +424,13 @@ def button_click_tracking_4_upload_mode(request):
         except Exception as e:
             return render(request, 'form_4_upload_form.html', {'error': f"ERROR: {e}"})
     if "get file upload mode" in request.POST.keys():
-        path_to_results_file = os.path.join(f"{MEDIA_ROOT}",
-                                            'Output/fin_test_upload_mode.csv')
-        file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
-        return file_response
+        try:
+            path_to_results_file = os.path.join(f"{MEDIA_ROOT}",
+                                                'Output/fin_test_upload_mode.csv')
+            file_response = FileResponse(open(path_to_results_file, 'rb'), as_attachment=True)
+            return file_response
+        except Exception as e:
+            return render(request, 'form_4_upload_form.html', {'error': f"ERROR: {e}"})
     if "button to main page" in request.POST.keys():
         remove_all_tmp()
         return redirect("/")

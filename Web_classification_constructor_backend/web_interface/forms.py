@@ -27,13 +27,6 @@ def check_1_100(value):
 
 class Form1(forms.Form):
     """Форма для ввода общих параметров"""
-    # field_1 = forms.IntegerField(required=False, help_text=" - Число")
-    # field_2 = forms.CharField(required=False, initial="", help_text=" - Текст")
-    # choices = [(1, 1), (2, 2), (3, 3)]
-    # field_3 = forms.ChoiceField(choices=choices, required=False, initial="", help_text=" - Выбор")
-
-    # name_of_model = forms.CharField(required=False, initial="", empty_value=None, label="Название модели")
-
     choices = get_choices(['HardRemoval', 'InsertMeanMode', 'LinearImputer'])
     filling_gaps_method = forms.ChoiceField(choices=choices, required=False, initial="",
                                             label="Метод заполнения пробелов")
@@ -82,12 +75,6 @@ class DeletingAnomaliesMethodGrubbs(forms.Form):
     alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
-# class DeletingAnomaliesMethodInterquartile(forms.Form):
-#     low_quant = forms.FloatField(required=False, validators=[check_zero_one])
-#     up_quant = forms.FloatField(required=False, validators=[check_zero_one])
-#     coef = forms.FloatField(required=False, validators=[check_zero_one])
-
-
 class DeletingAnomaliesMethodIsolationForest(forms.Form):
     n_estimators = forms.IntegerField(required=False, min_value=1, max_value=1000)
     contamination = forms.FloatField(required=False, min_value=0.01, max_value=0.5)
@@ -99,18 +86,6 @@ class DeletingAnomaliesMethodElliptic(forms.Form):
 
 class DeletingAnomaliesMethodSVM(forms.Form):
     iters = forms.IntegerField(required=False, validators=[check_positive])
-
-
-# class DeletingAnomaliesMethodApproximate(forms.Form):
-#     deviation = forms.IntegerField(required=False)
-
-
-# class DeletingAnomaliesMethodLocalFactor(forms.Form):
-#     neigh = forms.IntegerField(required=False, validators=[check_positive])
-#     contamination = forms.FloatField(required=False, validators=[check_zero_one])
-#
-#     choices = get_choices(['auto', 'ball_tree', 'kd_tree', 'brute'])
-#     algorithm = forms.ChoiceField(choices=choices, required=False, initial="")
 
 
 class FeatureSelectionMethodVarianceThreshold(forms.Form):
@@ -137,24 +112,9 @@ class FeatureSelectionMethodSelectFwe(forms.Form):
     alpha = forms.FloatField(required=False, validators=[check_zero_one])
 
 
-# class FeatureSelectionMethodGenericUnivariateSelect(forms.Form):
-#     choices = get_choices(['percentile', 'k_best', 'fpr', 'fdr', 'fwe'])
-#     mode = forms.ChoiceField(choices=choices, required=False, initial="")
-#
-#     param = forms.FloatField(required=False, validators=[check_positive])
-
-
 class FeatureSelectionMethodRFE(forms.Form):
     n_features_to_select = forms.IntegerField(required=False, validators=[check_positive])
     step = forms.IntegerField(required=False, validators=[check_positive])
-
-
-# class FeatureSelectionMethodSelectFromModel(forms.Form):
-#     choices = get_choices(['median', 'mean'])
-#     threshold = forms.ChoiceField(choices=choices, required=False, initial="")
-#
-#     norm_order = forms.IntegerField(required=False, validators=[check_positive])
-#     max_features = forms.IntegerField(required=False, validators=[check_positive])
 
 
 class CompositionMethodVoting(forms.Form):
@@ -207,7 +167,6 @@ class LogisticRegression(forms.Form):
 
 
 class UploadFileForm(forms.Form):
-    # title = forms.CharField(max_length=50)
     file_train = forms.FileField(required=False)
     file_test = forms.FileField(required=False)
 
