@@ -1,1 +1,1 @@
-web: gunicorn Web_classification_constructor_backend.Web_classification_constructor_backend.wsgi --log-file -
+web: cd Web_classification_constructor_backend && gunicorn Web_classification_constructor_backend.wsgi
