@@ -7,6 +7,10 @@ body {
     font-family: "PT Sans Bold";
 }
 
+body {
+    zoom: 175%;
+}
+
 #all {
     display: flex;
     flex-direction: column;
@@ -122,6 +126,10 @@ button[name="button send 4 upload mode"],
 #exit {
     align-self: center;
     color: white;
+}
+
+#web_classification_constructor{
+    padding-left: 75px;
 }
 
 #mephi_image_place {

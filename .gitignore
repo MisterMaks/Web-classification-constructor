@@ -3,7 +3,7 @@
 *.swo
 *.swp
 venv-Web-classification-constructor/
-#Web_classification_constructor_backend/Web_classification_constructor_backend/local_settings.py
+Web_classification_constructor_backend/Web_classification_constructor_backend/local_settings.py
 #Web_classification_constructor_backend/db.sqlite3
 #migrations/
 #Web_classification_constructor_backend/tmp_user_files/
