@@ -55,7 +55,7 @@ def getting_estimators(pickle_path, X_test, y_test):
 
 def feature_description(df, train):
     """
-    КАкая-то вспомогательная функция
+    Вспомогательная функция для получения статистики по исходным признакам
     :param df:
     :param train:
     :return:
